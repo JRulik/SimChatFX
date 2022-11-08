@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 
 public class ServerMain {
     public final static int PORT = 6612;
-    protected static Database database;
+    public static Database database;
 
     public static void main(String[] args) throws IOException {
         Database database = new Database();

@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import static com.simchat.server.ServerMain.database;
 
 
-public class HandlerHandlerAbstract extends AbstractNetworkHandler implements Runnable {
+public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
-    public static ArrayList<HandlerHandlerAbstract> clientHandlers = new ArrayList<>();
+    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 
     private int threadID;
 
     private String clientUsername;
 
     private boolean logged;
-    public HandlerHandlerAbstract(int threadID, Socket socket) {
+    public ClientHandler(int threadID, Socket socket) {
         logged = false;
 
         this.threadID=threadID;
@@ -39,15 +39,15 @@ public class HandlerHandlerAbstract extends AbstractNetworkHandler implements Ru
     public void run() {
             String messageFromClient;
             while(socket.isConnected()){
-
                 try{
                     Message message = (Message) objectInputStream.readObject();
                     MessageType typeOfMessage = message.getMessageType();
+
                     if (typeOfMessage.equals(MessageType.LOGINMESSAGE)){
                         logInClient(message);
                     }
                     else if (typeOfMessage.equals(MessageType.SIGNUPMESSAGE)){
-
+                       signUp(message);
                     }else{
                         //TODO logged client
                     }
@@ -69,18 +69,31 @@ public class HandlerHandlerAbstract extends AbstractNetworkHandler implements Ru
 
         if (database.userLoginAndPasswordMap.containsKey(username)
                 && database.userLoginAndPasswordMap.get(username).equals(password)) {
-            logged=true;
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();
         }
         else{
-            objectOutputStream.writeBoolean(logged);
+            objectOutputStream.writeBoolean(false);
             objectOutputStream.flush();
             System.out.println("tebe neznam");
 
         }
     }
+    protected void signUp(Message message) throws IOException, ClassNotFoundException {
+        String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
+        String username = usernameAndPassword[0];
+        String password = usernameAndPassword[1];
 
+        if (!database.userLoginAndPasswordMap.containsKey(username)) {
+            database.userLoginAndPasswordMap.put(username,password);
+            objectOutputStream.writeBoolean(true);
+            objectOutputStream.flush();
+        }
+        else{
+            objectOutputStream.writeBoolean(false);
+            objectOutputStream.flush();
+        }
+    }
 
     public void removeClientHandler(){
         clientHandlers.remove(this);

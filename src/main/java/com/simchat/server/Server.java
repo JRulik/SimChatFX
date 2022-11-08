@@ -17,7 +17,7 @@ public class Server {
             while (!serverSocket.isClosed()){
                 System.out.println("[SERVER] - waiting for connection [Thread:"+threadID+"]");
                 Socket socket = serverSocket.accept();
-                Thread thread = new Thread(new HandlerHandlerAbstract(threadID, socket));
+                Thread thread = new Thread(new ClientHandler(threadID, socket));
                 thread.start();
                 System.out.println("[SERVER] - Connected [Thread:"+threadID+"]");
                 threadID++;

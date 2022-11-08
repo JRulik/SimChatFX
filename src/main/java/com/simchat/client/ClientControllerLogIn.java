@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -18,7 +19,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class HandlerControllerLogInAbstract extends AbstractNetworkHandler implements Initializable {
+public class ClientControllerLogIn extends AbstractNetworkHandler implements Initializable {
     @FXML
     private Label labelLogInfo;
     @FXML
@@ -28,7 +29,7 @@ public class HandlerControllerLogInAbstract extends AbstractNetworkHandler imple
     @FXML
     private TextField textFieldUserName;
     @FXML
-    private TextField textFieldPassword;
+    private PasswordField passwordFieldPassword;
     @FXML
     protected void signUpButtonClick(ActionEvent e) throws IOException {
 
@@ -46,7 +47,7 @@ public class HandlerControllerLogInAbstract extends AbstractNetworkHandler imple
     protected void loginButtonClick() throws IOException {
         String name, password;
         name = textFieldUserName.getText();
-        password = textFieldPassword.getText();
+        password = passwordFieldPassword.getText();
         Message message = new Message(MessageType.LOGINMESSAGE,name+"\n"+password);
         objectOutputStream.writeObject(message);
         boolean logged = objectInputStream.readBoolean();

@@ -14,7 +14,7 @@ public class ClientMain extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource("LogIn-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 300, 210);
-        stage.setTitle("SimChatFX!");
+        stage.setTitle("SimChatFX");
         stage.setScene(scene);
         stage.show();
     }

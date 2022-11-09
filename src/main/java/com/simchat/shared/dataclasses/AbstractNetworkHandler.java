@@ -1,4 +1,4 @@
-package com.simchat.shareddataclasses;
+package com.simchat.shared.dataclasses;
 
 import java.io.*;
 import java.net.Socket;

@@ -1,4 +1,4 @@
-package com.simchat.shareddataclasses;
+package com.simchat.shared.dataclasses;
 
 public enum MessageType {
     LOGINMESSAGE,SIGNUPMESSAGE,STANDARTMESSAGE

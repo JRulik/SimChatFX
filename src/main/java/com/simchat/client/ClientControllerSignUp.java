@@ -1,8 +1,8 @@
 package com.simchat.client;
 
-import com.simchat.shareddataclasses.AbstractNetworkHandler;
-import com.simchat.shareddataclasses.Message;
-import com.simchat.shareddataclasses.MessageType;
+import com.simchat.shared.dataclasses.AbstractNetworkHandler;
+import com.simchat.shared.dataclasses.Message;
+import com.simchat.shared.dataclasses.MessageType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -44,13 +44,13 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
             objectOutputStream.writeObject(message);
             boolean signedUp = objectInputStream.readBoolean();
             if(signedUp){
-                labelLogInfo.setTextFill(Color.GREEN);
-                labelLogInfo.setText("User: " +textFieldUserName.getText()+" was created");
+                labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
+                labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" was created");
                 buttonSignUp.setDisable(true);
             }
             else{
-                labelLogInfo.setTextFill(Color.RED);
-                labelLogInfo.setText("Username already exist. Use other username");
+                labelLogInfo.getStyleClass().add("labelLogInfoError");
+                labelLogInfo.setText("Username already exist. Use other username!");
             }
         }
     }

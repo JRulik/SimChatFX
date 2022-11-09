@@ -1,19 +1,19 @@
 package com.simchat.client;
 
-import com.simchat.shareddataclasses.Message;
-import com.simchat.shareddataclasses.AbstractNetworkHandler;
-import com.simchat.shareddataclasses.MessageType;
+import com.simchat.shared.dataclasses.Message;
+import com.simchat.shared.dataclasses.AbstractNetworkHandler;
+import com.simchat.shared.dataclasses.MessageType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -36,9 +36,13 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
     protected void signUpButtonClick(ActionEvent e) throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SignUp-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 300, 260);
+        Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
         stage.setTitle("SimChatFX - Sign Up");
+        String css = this.getClass().getResource("styles.css").toExternalForm();
+        Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
+        stage.getIcons().add(icon);
+        scene.getStylesheets().add(css);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);;
         stage.showAndWait();
@@ -47,22 +51,29 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
 
     @FXML
     protected void loginButtonClick(ActionEvent e) throws IOException {
-        Message message = new Message(MessageType.LOGINMESSAGE,
-                textFieldUserName.getText()+"\n"+passwordFieldPassword.getText());
-        objectOutputStream.writeObject(message);
-        boolean logged = objectInputStream.readBoolean();
-        if (logged){
-            labelLogInfo.setText("");
-            //TODO switch scenes
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Main-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 465, 489);
-
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+        if (textFieldUserName.getText().equals("") || passwordFieldPassword.getText().equals("")){
+            labelLogInfo.setText("Fill User Name or Password!");
         }
-        else{
-            labelLogInfo.setText("Wrong User Name or Password!");
+        else {
+            Message message = new Message(MessageType.LOGINMESSAGE,
+                    textFieldUserName.getText() + "\n" + passwordFieldPassword.getText());
+            objectOutputStream.writeObject(message);
+            boolean logged = objectInputStream.readBoolean();
+            if (logged) {
+                labelLogInfo.setText("");
+                //TODO switch scenes
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Main-view.fxml"));
+                Scene scene = new Scene(fxmlLoader.load());
+                String css = this.getClass().getResource("styles.css").toExternalForm();
+                scene.getStylesheets().add(css);
+                Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
+                stage.getIcons().add(icon);
+                stage.setScene(scene);
+                stage.show();
+            } else {
+                labelLogInfo.setText("Wrong User Name or Password!");
+            }
         }
     }
 

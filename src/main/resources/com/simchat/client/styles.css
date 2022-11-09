@@ -1,0 +1,41 @@
+
+.textFlowBackground{
+	-fx-background-color: #81F1FE;
+}
+
+.listViewBackground{
+	-fx-background-color: #81F1FE;
+}
+
+/*
+.textAreaBackground{
+	-fx-background-color: #81F1FE;
+}*/
+
+.guiBackground{
+	-fx-background-color: #34CDE0;
+}
+
+.labelLogInfo{
+	-fx-font-style: normal;
+	-fx-font-weight: bold;
+	-fx-font-family: "Arial";
+	-fx-font-size: 12;
+}
+
+.labelLogInfoError{
+	-fx-text-fill: #EB2020;
+}
+
+.labelLogInfoSuccess{
+	-fx-text-fill: green;
+}
+
+.button{
+    -fx-background-color:
+        linear-gradient(#3FA8B5 0%, #3095A2 5%, #1F7E8A 50%, #18727E 60%, #25919E 100%);
+    -fx-background-radius: 5,5,4;
+    -fx-font-family: "Arial";
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}

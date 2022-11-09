@@ -9,6 +9,7 @@ public class ServerMain {
 
     public static void main(String[] args) throws IOException {
         Database database = new Database();
+        System.out.println("TEST");
         database.hashMapUserLoginAndPassword.put("honza","aznoh");
 
         ServerSocket serverSocket = null;

@@ -30,7 +30,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             this.clientHandlers.add(this);
         } catch (IOException e) {
             closeEverything(socket, objectInputStream, objectOutputStream);
-            e.printStackTrace();
+            System.out.println("[Thread ID:"+threadID+"] finished");
         }
     }
 

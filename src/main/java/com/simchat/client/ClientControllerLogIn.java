@@ -7,6 +7,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -44,16 +46,20 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
     }
 
     @FXML
-    protected void loginButtonClick() throws IOException {
-        String name, password;
-        name = textFieldUserName.getText();
-        password = passwordFieldPassword.getText();
-        Message message = new Message(MessageType.LOGINMESSAGE,name+"\n"+password);
+    protected void loginButtonClick(ActionEvent e) throws IOException {
+        Message message = new Message(MessageType.LOGINMESSAGE,
+                textFieldUserName.getText()+"\n"+passwordFieldPassword.getText());
         objectOutputStream.writeObject(message);
         boolean logged = objectInputStream.readBoolean();
         if (logged){
             labelLogInfo.setText("");
             //TODO switch scenes
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Main-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 465, 489);
+
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
         }
         else{
             labelLogInfo.setText("Wrong User Name or Password!");

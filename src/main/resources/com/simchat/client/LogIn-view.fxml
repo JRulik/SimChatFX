@@ -11,7 +11,9 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="197.0" prefWidth="282.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simchat.client.ClientControllerLogIn">
    <children>
       <TextField fx:id="textFieldUserName" layoutX="119.0" layoutY="33.0" prefHeight="25.0" prefWidth="157.0" />
-      <Button fx:id="buttonSingUp" layoutX="113.0" layoutY="166.0" mnemonicParsing="false" onAction="#signUpButtonClick" prefHeight="25.0" prefWidth="62.0" text="Sign Up" />
+      <PasswordField fx:id="passwordFieldPassword" layoutX="119.0" layoutY="86.0" prefHeight="25.0" prefWidth="157.0" />
+      <Button fx:id="buttonLogIn" layoutX="184.0" layoutY="145.0" mnemonicParsing="false" onAction="#loginButtonClick" prefHeight="46.0" prefWidth="92.0" text="Login" />
+      <Button fx:id="buttonSingUp" layoutX="105.0" layoutY="159.0" mnemonicParsing="false" onAction="#signUpButtonClick" prefHeight="32.0" prefWidth="70.0" text="Sign Up" />
       <Circle fill="DODGERBLUE" layoutX="26.0" layoutY="52.0" radius="85.0" stroke="BLACK" strokeType="INSIDE" />
       <Label layoutX="119.0" layoutY="14.0" text="User Name:" />
       <Label layoutX="119.0" layoutY="67.0" text="Password: " />
@@ -19,7 +21,5 @@
          <font>
             <Font size="13.0" />
          </font></Label>
-      <Button fx:id="buttonLogIn" layoutX="189.0" layoutY="152.0" mnemonicParsing="false" onAction="#loginButtonClick" prefHeight="39.0" prefWidth="87.0" text="Login" />
-      <PasswordField fx:id="passwordFieldPassword" layoutX="119.0" layoutY="86.0" prefHeight="25.0" prefWidth="157.0" />
    </children>
 </AnchorPane>

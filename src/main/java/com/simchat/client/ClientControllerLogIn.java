@@ -45,8 +45,10 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
         scene.getStylesheets().add(css);
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);;
+        stage.setResizable(false);
         stage.showAndWait();
         //stage.show();
+        textFieldUserName.requestFocus();
     }
 
     @FXML
@@ -70,11 +72,14 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
                 Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
                 stage.getIcons().add(icon);
                 stage.setScene(scene);
+                stage.setResizable(false);
                 stage.show();
             } else {
                 labelLogInfo.setText("Wrong User Name or Password!");
             }
+
         }
+        textFieldUserName.requestFocus();
     }
 
     @Override

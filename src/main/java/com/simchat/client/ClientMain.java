@@ -22,6 +22,7 @@ public class ClientMain extends Application {
         scene.getStylesheets().add(css);
         stage.setTitle("SimChatFX");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

@@ -34,9 +34,16 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
 
     @FXML
     protected void signUp() throws IOException {
+        if(textFieldUserName.getText().length()<3){
+            labelLogInfo.setText("Username must have at least 3 characters!");
+            textFieldUserName.requestFocus();
+            return;
+        }
         if(passwordFieldPassword.getText().length()<5){
             labelLogInfo.setText("Password must have at least 5 characters!");
+            passwordFieldPassword.requestFocus();
         }else if (!passwordFieldPassword.getText().equals(passwordFieldPassword2.getText())){
+            passwordFieldPassword.requestFocus();
             labelLogInfo.setText("Passwords don´t match!");
         }else{
             Message message = new Message(MessageType.SIGNUPMESSAGE, textFieldUserName.getText()
@@ -51,6 +58,7 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
             else{
                 labelLogInfo.getStyleClass().add("labelLogInfoError");
                 labelLogInfo.setText("Username already exist. Use other username!");
+                textFieldUserName.requestFocus();
             }
         }
     }

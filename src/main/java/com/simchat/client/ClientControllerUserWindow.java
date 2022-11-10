@@ -39,10 +39,10 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
     @FXML
     protected void butttonSendAction(ActionEvent e){
-
+        textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }
     @FXML
     protected void buttonAddFriendAction(ActionEvent e){
-
+        textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }
 }

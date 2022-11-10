@@ -39,3 +39,11 @@
     -fx-font-size: 12px;
     -fx-text-fill: white;
 }
+.button:focused{
+    -fx-focus-color: transparent;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+.button:hover{
+    -fx-focus-color: transparent;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}

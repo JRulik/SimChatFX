@@ -3,11 +3,25 @@ package com.simchat.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class Server {
 
     protected ServerSocket serverSocket;
+
+    private DatabaseMaster databaseMaster;
     public Server(ServerSocket serverSocket) {
+
+        try {
+            databaseMaster = new DatabaseMaster();
+            databaseMaster.databaseInit();
+            databaseMaster.resetDatabase();
+            databaseMaster.fillTableUsers();
+        } catch (SQLException e) {
+            System.out.println("Cannont connect to database!");
+            e.printStackTrace();
+        }
+
         this.serverSocket = serverSocket;
     }
 

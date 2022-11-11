@@ -14,7 +14,6 @@ public class ClientMain extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource("LogIn-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        System.out.println(ClientMain.class);
         Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
         stage.getIcons().add(icon);
 

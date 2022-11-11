@@ -6,10 +6,8 @@ import com.simchat.shared.dataclasses.MessageType;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
-
-import static com.simchat.server.ServerMain.database;
-
 
 public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
@@ -19,6 +17,8 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     private String clientUsername;
 
+    private Database database;
+
     private boolean logged;
     public ClientHandler(int threadID, Socket socket) {
         logged = false;
@@ -26,11 +26,13 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         this.threadID=threadID;
         try {
             initSocketAndStreams(socket);
-            //Read line
+            database = new Database();
             this.clientHandlers.add(this);
         } catch (IOException e) {
             closeEverything(socket, objectInputStream, objectOutputStream);
             System.out.println("[Thread ID:"+threadID+"] finished");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -54,17 +56,19 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                     break;
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
             }
     }
 
-    protected void logInClient(Message message) throws IOException, ClassNotFoundException {
+    protected void logInClient(Message message) throws IOException, ClassNotFoundException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];
 
-        if (database.hashMapUserLoginAndPassword.containsKey(username)
-                && database.hashMapUserLoginAndPassword.get(username).equals(password)) {
+        if (database.checkUsernameAndPassword(username,password)) {
+            clientUsername=username;
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();
         }
@@ -75,13 +79,15 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
         }
     }
-    protected void signUp(Message message) throws IOException, ClassNotFoundException {
+
+    protected void signUp(Message message) throws IOException, ClassNotFoundException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];
 
-        if (!database.hashMapUserLoginAndPassword.containsKey(username)) {
-            database.hashMapUserLoginAndPassword.put(username,password);
+        if (!database.userExists(username)) {
+            database.insertUser(username,password);
+            database.createTableUserFriendList(username);
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();
         }

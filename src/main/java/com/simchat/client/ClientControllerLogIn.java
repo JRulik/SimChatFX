@@ -69,8 +69,13 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
                 String css = this.getClass().getResource("styles.css").toExternalForm();
                 scene.getStylesheets().add(css);
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+
                 Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
                 stage.getIcons().add(icon);
+
+                ClientControllerUserWindow controller = fxmlLoader.getController();
+                controller.setUsername(textFieldUserName.getText());
+
                 stage.setScene(scene);
                 stage.setResizable(false);
                 stage.show();
@@ -90,7 +95,7 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
             buttonLogIn.setDisable(true);
             buttonSingUp.setDisable(true);
             closeEverything(socket, objectInputStream, objectOutputStream);
-            labelLogInfo.setText("[Error] -Could not connect to server");
+            labelLogInfo.setText("[Error] - Could not connect to server");
             e.printStackTrace();
         }
     }

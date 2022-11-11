@@ -27,6 +27,8 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     @FXML
     private ScrollPane scrollPaneRecieve;
 
+    private String username;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
             textFlowRecieve.getChildren().addListener((ListChangeListener<Node>) ((change) -> {
@@ -45,4 +47,13 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     protected void buttonAddFriendAction(ActionEvent e){
         textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 }

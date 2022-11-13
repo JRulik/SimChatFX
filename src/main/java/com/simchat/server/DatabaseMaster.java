@@ -14,6 +14,10 @@ public class DatabaseMaster extends Database{
     public void databaseInit() throws SQLException {
         connection.prepareStatement("CREATE DATABASE IF NOT EXISTS "+nameOfDatabase).execute();
         connection = DriverManager.getConnection(url+"/"+nameOfDatabase,user,password);
+        connection.prepareStatement("CREATE TABLE IF NOT EXISTS users (username VARCHAR(50) not null" +
+                ", password VARCHAR(50) not null" +
+                ", PRIMARY KEY(username))").execute(); //ID must be set as a kay, when AUTO_INCREMENT (dont know why ->otherwise exception)
+
     }
 
     public void resetDatabase() throws SQLException {
@@ -32,8 +36,10 @@ public class DatabaseMaster extends Database{
     }
 
     public void fillTableUsers() throws SQLException {
-        connection.prepareStatement("INSERT INTO users VALUES (\"honza\",\"aznoh\")").execute();
-        connection.prepareStatement("INSERT INTO users VALUES (\"admin\",\"admin\")").execute();
+        addUser("honza","aznoh");
+        addUser("asdasd","asdasd");
+        addUser("qweqwe","qweqwe");
+
     }
 
 

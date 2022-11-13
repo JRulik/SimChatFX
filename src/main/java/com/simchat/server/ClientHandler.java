@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
@@ -48,6 +49,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         case LOGINMESSAGE: logInClient(message); break;
                         case SIGNUPMESSAGE: signUp(message); break;
                         case ADDFRIEND: addFriend(message); break;
+                        case RETURNFRIENDLIST: returnFriendList(message); break;
                         default: //TODO logged client
                     }
                 }
@@ -86,8 +88,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         String password = usernameAndPassword[1];
 
         if (!database.userExists(username)) {
-            database.insertUser(username,password);
-            database.createTableUserFriendList(username);
+            database.addUser(username,password);
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();
         }
@@ -100,7 +101,9 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
     protected void addFriend(Message message) throws IOException, ClassNotFoundException, SQLException {
         String friendUserName = message.getMessage();
 
-        if (!database.userExists(friendUserName)) {
+        //TODO here would be better to have MSG type from server with more return possibilities
+        //TODO manage that you can add yourself as friend and write yourself msg
+        if (!friendUserName.equals(this.clientUsername) && database.userExists(friendUserName)) {
             database.addFriend(clientUsername,friendUserName);
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();
@@ -109,7 +112,30 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             objectOutputStream.writeBoolean(false);
             objectOutputStream.flush();
         }
+                /*
+        if (!friendUserName.equals(this.clientUsername) && database.userExists(friendUserName)
+                && !database.userInUserFriendlist(this.clientUsername,friendUserName) ) {
+            database.addFriend(clientUsername,friendUserName);
+            message = new Message(MessageType.SERVER_OK);
+            objectOutputStream.writeObject(message);
+        }
+        else{
+            message = new Message(MessageType.SERVER_ERROR,"User already in friendlist");
+            objectOutputStream.writeObject(message);
+        }*/
     }
+
+    protected void returnFriendList(Message message) throws IOException, ClassNotFoundException, SQLException {
+        ArrayList<String> friends =  database.getFriends(clientUsername);
+        Message returnMessage = new Message(MessageType.SERVER_OK);
+        StringJoiner joinedFriends = new StringJoiner("\n");
+        for (String friend: friends) {
+            joinedFriends.add(friend);
+        }
+        returnMessage.setMessage(joinedFriends.toString());
+        objectOutputStream.writeObject(returnMessage);
+    }
+
     public void removeClientHandler(){
         clientHandlers.remove(this);
     }

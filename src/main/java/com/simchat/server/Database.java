@@ -1,10 +1,7 @@
 package com.simchat.server;
 
-import com.simchat.shared.dataclasses.Message;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static com.simchat.server.ServerMain.*;
 
@@ -38,11 +35,13 @@ public class Database {
         return false;
     }
 
-    public void insertUser(String username, String password) throws SQLException {
+    public void addUser(String username, String password) throws SQLException {
         PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO users VALUES (?,?)");
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
         preparedStatement.executeUpdate();
+
+        createTableUserFriendList(username);
     }
 
     public void addFriend(String username, String friendUserName) throws SQLException {
@@ -51,13 +50,27 @@ public class Database {
         preparedStatement.executeUpdate();
     }
 
+    public ArrayList<String> getFriends(String username) throws SQLException {
+        PreparedStatement preparedStatement =  connection.prepareStatement("SELECT * FROM "+username+"_friendlist");
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList<String> friends = new ArrayList<>();
+        while(resultSet.next()){
+            friends.add(String.valueOf(resultSet.getString(1)));
+        }
+        return friends;
+    }
     public void createTableUserFriendList(String username){
         try {
-           connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50))").execute();
+            //TODO set username unique
+           connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50), PRIMARY KEY(username))").execute();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+    /*
+    public boolean userInUserFriendlist(String clientUsername, String friendUserName) {
+
+    }*/
 }

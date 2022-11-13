@@ -47,9 +47,11 @@ public class ClientControllerAddFriend extends AbstractNetworkHandler implements
         if(addedFriend){
             labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
             labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
+            buttonAddFriend.setDisable(true);
         }else{
             labelLogInfo.getStyleClass().add("labelLogInfoError");
             labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" doesn´t exists");
         }
+
     }
 }

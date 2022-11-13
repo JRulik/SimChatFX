@@ -24,6 +24,6 @@
          <font>
             <Font size="14.0" />
          </font></Button>
-      <ListView  styleClass="listViewBackground" fx:id="listViewFriends" layoutX="355.0" layoutY="58.0" prefHeight="313.0" prefWidth="104.0" />
+      <ListView styleClass="listViewBackground" fx:id="listViewFriendList" layoutX="355.0" layoutY="58.0" prefHeight="313.0" prefWidth="104.0" />
    </children>
 </AnchorPane>

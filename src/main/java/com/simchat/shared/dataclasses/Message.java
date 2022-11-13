@@ -12,12 +12,24 @@ public class Message implements Serializable {
     private LocalDateTime createdTime;
     private String message;
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Message(MessageType messageType, String message) {
         this.messageType = messageType;
         this.fromUser = null;
         this.toUser = null;
         this.createdTime = null;
         this.message = message;
+    }
+
+    public Message(MessageType messageType) {
+        this.messageType = messageType;
+        this.fromUser = null;
+        this.toUser = null;
+        this.createdTime = null;
+        this.message = null;
     }
 
     public Message(MessageType messageType, String fromUser, String toUser, LocalDateTime createdTime, String message) {

@@ -33,6 +33,7 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
     @FXML
     protected void signUp() throws IOException {
 
+        labelLogInfo.getStyleClass().add("labelLogInfoError");
         if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", textFieldUserName.getText())
         || Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", passwordFieldPassword.getText())){
             Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
@@ -63,7 +64,6 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
                 buttonSignUp.setDisable(true);
             }
             else{
-                labelLogInfo.getStyleClass().add("labelLogInfoError");
                 labelLogInfo.setText("Username already exist. Use other username!");
                 textFieldUserName.requestFocus();
             }

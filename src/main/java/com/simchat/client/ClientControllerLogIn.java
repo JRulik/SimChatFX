@@ -69,7 +69,6 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
             boolean logged = objectInputStream.readBoolean();
             if (logged) {
                 labelLogInfo.setText("");
-                //TODO switch scenes
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Main-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
                 String css = this.getClass().getResource("styles.css").toExternalForm();
@@ -81,7 +80,7 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
 
                 ClientControllerUserWindow controller = fxmlLoader.getController();
                 controller.setUsername(textFieldUserName.getText());
-
+;
                 stage.setScene(scene);
                 stage.setResizable(false);
                 stage.show();

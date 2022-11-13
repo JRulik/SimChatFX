@@ -82,6 +82,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         }
     }
 
+    //TODO save password in hash
     protected void signUp(Message message) throws IOException, ClassNotFoundException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];

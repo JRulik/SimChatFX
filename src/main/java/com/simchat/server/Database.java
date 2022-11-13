@@ -42,6 +42,7 @@ public class Database {
         preparedStatement.executeUpdate();
 
         createTableUserFriendList(username);
+        createTableUserMessages(username);
     }
 
     public void addFriend(String username, String friendUserName) throws SQLException {
@@ -68,7 +69,16 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
-
+    public void createTableUserMessages(String username){
+        try {
+            connection.prepareStatement("CREATE TABLE "+username+"_messages (ID INTEGER NOT NULL AUTO_INCREMENT," +
+                    "fromUser VARCHAR(50),toUser VARCHAR(50)," +
+                    "datetime DATETIME,message TEXT, PRIMARY KEY(ID))").execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
     /*
     public boolean userInUserFriendlist(String clientUsername, String friendUserName) {
 

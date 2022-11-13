@@ -11,11 +11,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -24,6 +28,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class ClientControllerUserWindow extends AbstractNetworkHandler implements Initializable {
@@ -34,23 +40,29 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     @FXML
     private TextArea textAreaSend;
     @FXML
-    private TextFlow textFlowRecieve;
+    private VBox vBoxRecieve;
     @FXML
     private ScrollPane scrollPaneRecieve;
     @FXML
     private ListView<String> listViewFriendList;
     @FXML
     private Label labelSelectedFriend;
+    @FXML
+    private Label labelUsername;
     private String username;
     private String selectedFriend;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-            textFlowRecieve.getChildren().addListener((ListChangeListener<Node>) ((change) -> {
-                textFlowRecieve.layout();
+
+        vBoxRecieve.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
                 scrollPaneRecieve.layout();
-                scrollPaneRecieve.setVvalue(1.0f);
-            }));
+                scrollPaneRecieve.setVvalue((Double) newValue);
+            }
+        });
+
         //textFlowRecieve.setBackground(Background.fill(Color.WHITE));// funguje
 
         listViewRefresh();
@@ -58,7 +70,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
               @Override
               public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                   selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
-                  textFlowRecieve.getChildren().clear();
+                  //textFlowRecieve.getChildren().clear();
                   //textFlowRecieve.getChildren().add(new Text(selectedFriend));
                   labelSelectedFriend.setText(selectedFriend);
                   //textAreaSend.setFocusTraversable(true);
@@ -85,7 +97,27 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
     @FXML
     protected void butttonSendAction(ActionEvent e){
-        textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
+        String messageToSend =textAreaSend.getText();
+        if (!messageToSend.isEmpty()) {
+
+            HBox hBox = new HBox();
+            hBox.setAlignment(Pos.CENTER_RIGHT);
+            hBox.getStyleClass().add("hbox_send");
+            Text text = new Text(messageToSend);
+            TextFlow textFlow = new TextFlow(text);
+            textFlow.getStyleClass().add("textflow_send");
+            hBox.getChildren().add(textFlow);
+            vBoxRecieve.getChildren().add(hBox);
+
+            //TODO for server communication
+            Message message = new Message(MessageType.STANDARTMESSAGE, username,
+                    labelSelectedFriend.getText(), LocalDateTime.now(), messageToSend);
+            //textFlowRecieve.getChildren().add(new Text(textAreaSend.getText()));
+            textAreaSend.clear();
+            textAreaSend.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
+        }
+
+
     }
     @FXML
     protected void buttonAddFriendAction(ActionEvent e) throws IOException {
@@ -104,7 +136,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
         stage.showAndWait();
         //stage.show();
         listViewRefresh();
-        textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
+        //textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }
 
     public String getUsername() {
@@ -113,6 +145,10 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
     public void setUsername(String username) {
         this.username = username;
+        setLabelUsername(username);
     }
 
+    public void setLabelUsername(String username) {
+        labelUsername.setText(username);
+    }
 }

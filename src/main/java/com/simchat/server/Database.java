@@ -47,9 +47,7 @@ public class Database {
 
     public void createTableUserFriendList(String username){
         try {
-            PreparedStatement preparedStatement =  connection.prepareStatement("CREATE TABLE IF NOT EXISTS ? (username VARCHAR(50))");
-            preparedStatement.setString(1, username);
-            preparedStatement.execute();
+           connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50))").execute();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

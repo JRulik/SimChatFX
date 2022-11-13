@@ -5,15 +5,13 @@ import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
+import java.util.regex.Pattern;
 
 
 public class ClientControllerSignUp extends AbstractNetworkHandler implements Initializable {
@@ -34,6 +32,17 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
 
     @FXML
     protected void signUp() throws IOException {
+
+        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", textFieldUserName.getText())
+        || Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", passwordFieldPassword.getText())){
+            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            alert.showAndWait();
+
+            labelLogInfo.setText("This characters  \",./;'#=<> ?:@~{}_+-\" can´t be used");
+            textFieldUserName.requestFocus();
+            return;
+        }
+
         if(textFieldUserName.getText().length()<3){
             labelLogInfo.setText("Username must have at least 3 characters!");
             textFieldUserName.requestFocus();

@@ -46,6 +46,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     @FXML
     protected void buttonAddFriendAction(ActionEvent e){
         textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
+
     }
 
     public String getUsername() {

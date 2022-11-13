@@ -47,6 +47,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                     switch(typeOfMessage){
                         case LOGINMESSAGE: logInClient(message); break;
                         case SIGNUPMESSAGE: signUp(message); break;
+                        case ADDFRIEND: addFriend(message); break;
                         default: //TODO logged client
                     }
                 }
@@ -76,7 +77,6 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             objectOutputStream.writeBoolean(false);
             objectOutputStream.flush();
             System.out.println("tebe neznam");
-
         }
     }
 
@@ -97,6 +97,19 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         }
     }
 
+    protected void addFriend(Message message) throws IOException, ClassNotFoundException, SQLException {
+        String friendUserName = message.getMessage();
+
+        if (!database.userExists(friendUserName)) {
+            database.addFriend(clientUsername,friendUserName);
+            objectOutputStream.writeBoolean(true);
+            objectOutputStream.flush();
+        }
+        else{
+            objectOutputStream.writeBoolean(false);
+            objectOutputStream.flush();
+        }
+    }
     public void removeClientHandler(){
         clientHandlers.remove(this);
     }

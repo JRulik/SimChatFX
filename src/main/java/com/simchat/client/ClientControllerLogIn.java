@@ -9,10 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class ClientControllerLogIn extends AbstractNetworkHandler implements Initializable {
     @FXML
@@ -53,6 +51,14 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
 
     @FXML
     protected void loginButtonClick(ActionEvent e) throws IOException {
+        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", textFieldUserName.getText())
+                || Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", passwordFieldPassword.getText())){
+            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            alert.showAndWait();
+
+            textFieldUserName.requestFocus();
+            return;
+        }
         if (textFieldUserName.getText().equals("") || passwordFieldPassword.getText().equals("")){
             labelLogInfo.setText("Fill User Name or Password!");
         }

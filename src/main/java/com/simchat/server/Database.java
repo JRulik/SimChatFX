@@ -45,6 +45,12 @@ public class Database {
         preparedStatement.executeUpdate();
     }
 
+    public void addFriend(String username, String friendUserName) throws SQLException {
+        PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO "+username+"_friendlist VALUES (?)");
+        preparedStatement.setString(1, friendUserName);
+        preparedStatement.executeUpdate();
+    }
+
     public void createTableUserFriendList(String username){
         try {
            connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50))").execute();

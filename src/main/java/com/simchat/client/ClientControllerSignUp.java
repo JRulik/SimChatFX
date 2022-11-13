@@ -37,8 +37,6 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
         || Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", passwordFieldPassword.getText())){
             Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
             alert.showAndWait();
-
-            labelLogInfo.setText("This characters  \",./;'#=<> ?:@~{}_+-\" can´t be used");
             textFieldUserName.requestFocus();
             return;
         }

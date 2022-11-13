@@ -3,6 +3,7 @@ package com.simchat.client;
 import com.simchat.shared.dataclasses.AbstractNetworkHandler;
 import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -12,9 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
@@ -33,13 +32,15 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     @FXML
     private Button buttonSend;
     @FXML
-    private TextFlow textArea;
+    private TextArea textAreaSend;
     @FXML
     private TextFlow textFlowRecieve;
     @FXML
     private ScrollPane scrollPaneRecieve;
     @FXML
     private ListView<String> listViewFriendList;
+    @FXML
+    private Label labelSelectedFriend;
     private String username;
     private String selectedFriend;
 
@@ -51,12 +52,17 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
                 scrollPaneRecieve.setVvalue(1.0f);
             }));
         //textFlowRecieve.setBackground(Background.fill(Color.WHITE));// funguje
+
         listViewRefresh();
         listViewFriendList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
               @Override
               public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
                   selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
-                  textFlowRecieve.getChildren().add(new Text(selectedFriend));
+                  textFlowRecieve.getChildren().clear();
+                  //textFlowRecieve.getChildren().add(new Text(selectedFriend));
+                  labelSelectedFriend.setText(selectedFriend);
+                  //textAreaSend.setFocusTraversable(true);
+                  Platform.runLater(()->textAreaSend.requestFocus());
               }
           }
         );
@@ -98,7 +104,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
         stage.showAndWait();
         //stage.show();
         listViewRefresh();
-
+        textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }
 
     public String getUsername() {

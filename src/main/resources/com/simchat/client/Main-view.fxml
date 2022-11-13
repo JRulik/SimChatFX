@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
@@ -8,14 +9,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane styleClass="guiBackground" prefHeight="456.0" prefWidth="465.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simchat.client.ClientControllerUserWindow">
+<AnchorPane prefHeight="456.0" prefWidth="465.0" styleClass="guiBackground" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simchat.client.ClientControllerUserWindow">
    <children>
       <ScrollPane fx:id="scrollPaneRecieve" layoutX="11.0" layoutY="14.0" prefHeight="356.0" prefWidth="339.0">
          <content>
             <TextFlow fx:id="textFlowRecieve" prefHeight="354.0" prefWidth="337.0" styleClass="textFlowBackground" />
          </content>
       </ScrollPane>
-      <TextArea styleClass="textAreaBackground" fx:id="textAreaSend" layoutX="11.0" layoutY="379.0" prefHeight="66.0" prefWidth="339.0" />
+      <TextArea fx:id="textAreaSend" layoutX="11.0" layoutY="379.0" prefHeight="66.0" prefWidth="339.0" styleClass="textAreaBackground" />
       <Button fx:id="buttonSend" layoutX="355.0" layoutY="379.0" mnemonicParsing="false" onAction="#butttonSendAction" prefHeight="66.0" prefWidth="104.0" text="Send">
          <font>
             <Font size="20.0" />
@@ -24,6 +25,11 @@
          <font>
             <Font size="14.0" />
          </font></Button>
-      <ListView styleClass="listViewBackground" fx:id="listViewFriendList" layoutX="355.0" layoutY="58.0" prefHeight="313.0" prefWidth="104.0" />
+      <ListView fx:id="listViewFriendList" layoutX="355.0" layoutY="58.0" prefHeight="313.0" prefWidth="104.0" styleClass="listViewBackground" />
+      <Label fx:id="labelSelectedFriend" layoutX="11.0" prefHeight="17.0" prefWidth="195.0" text="">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

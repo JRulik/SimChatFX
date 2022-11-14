@@ -7,11 +7,15 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.time.LocalDateTime;
 
 public class ClientMain extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
+
+
         FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource("LogIn-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));

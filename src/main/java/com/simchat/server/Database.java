@@ -1,6 +1,8 @@
 package com.simchat.server;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static com.simchat.server.ServerMain.*;
@@ -13,7 +15,7 @@ public class Database {
         connection = DriverManager.getConnection(url+"/"+nameOfDatabase,user,password);
     }
 
-
+    //TODO hashovani hesla
     public boolean checkUsernameAndPassword(String username, String password) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ? AND password= ?");
         preparedStatement.setString(1, username);
@@ -79,8 +81,43 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+
+    public void insertMessage(String fromUser, String toUser, String messageToSend, String createdTime) throws SQLException {
+
+        PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO "+fromUser+"_messages " +
+                "(fromUser, toUser,datetime,message) VALUES (?,?,?,?)");
+        preparedStatement.setString(1, fromUser);
+        preparedStatement.setString(2, toUser);
+        preparedStatement.setString(3, createdTime);
+        preparedStatement.setString(4, messageToSend);
+        preparedStatement.executeUpdate();
+
+        preparedStatement =  connection.prepareStatement("INSERT INTO "+toUser+"_messages " +
+                "(fromUser, toUser,datetime,message) VALUES (?,?,?,?)");
+        preparedStatement.setString(1, fromUser);
+        preparedStatement.setString(2, toUser);
+        preparedStatement.setString(3, createdTime);
+        preparedStatement.setString(4, messageToSend);
+        preparedStatement.executeUpdate();
+
+    }
     /*
     public boolean userInUserFriendlist(String clientUsername, String friendUserName) {
 
+    }*/
+
+/*
+@Converter(autoApply = true)
+public class LocalDateAttributeConverter implements
+        AttributeConverter<LocalDate, Date> {
+
+    @Override
+    public Date convertToDatabaseColumn(LocalDate locDate) {
+        return (locDate == null ? null : Date.valueOf(locDate));
+    }
+
+    @Override
+    public LocalDate convertToEntityAttribute(Date sqlDate) {
+        return (sqlDate == null ? null : sqlDate.toLocalDate());
     }*/
 }

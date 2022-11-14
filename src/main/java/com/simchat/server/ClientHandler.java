@@ -7,6 +7,7 @@ import com.simchat.shared.dataclasses.MessageType;
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
@@ -16,11 +17,26 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     private int threadID;
 
+
+
     private String clientUsername;
 
     private Database database;
 
     private boolean logged;
+
+
+    public int getThreadID() {
+        return threadID;
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
+    }
+
+    public boolean isLogged() {
+        return logged;
+    }
     public ClientHandler(int threadID, Socket socket) {
         logged = false;
 
@@ -50,6 +66,8 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         case SIGNUPMESSAGE: signUp(message); break;
                         case ADDFRIEND: addFriend(message); break;
                         case RETURNFRIENDLIST: returnFriendList(message); break;
+                        case STANDARTMESSAGE: recieveMessage(message); break;
+                        //TODO case on returnRecievedMessages
                         default: //TODO logged client
                     }
                 }
@@ -65,12 +83,37 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             }
     }
 
+    private void recieveMessage(Message message) throws SQLException, IOException {
+        String fromUser,toUser,messageToSend;
+        LocalDateTime createdTime = message.getCreatedTime();
+        fromUser = message.getFromUser();
+        toUser = message.getToUser();
+        messageToSend=message.getMessage();
+
+        //TODO sort clientHandlers and find by binarysearch
+        for (ClientHandler client: clientHandlers) {
+            if(client.getClientUsername().equals(toUser)){
+                client.objectOutputStream.writeObject(message);
+                break;
+            }
+        }
+
+        String databaseDateFormat = dateTimeToDatabaseDate(createdTime);
+        database.insertMessage(fromUser,toUser,messageToSend,databaseDateFormat);
+    }
+
+
+    private String dateTimeToDatabaseDate(LocalDateTime createdTime) {
+        return String.valueOf(createdTime).replace('T',' ');
+    }
+
     protected void logInClient(Message message) throws IOException, ClassNotFoundException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];
 
         if (database.checkUsernameAndPassword(username,password)) {
+            logged=true;
             clientUsername=username;
             objectOutputStream.writeBoolean(true);
             objectOutputStream.flush();

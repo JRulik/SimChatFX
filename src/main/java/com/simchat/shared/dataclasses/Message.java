@@ -40,14 +40,9 @@ public class Message implements Serializable {
         this.message = message;
     }
 
-
-    public Message(String from, String toUser, LocalDateTime createdTime, String message) {
-        super();
-        this.fromUser = from;
-        this.toUser = toUser;
-        this.createdTime = createdTime;
-        this.message = message;
-        messageType = MessageType.STANDARTMESSAGE;
+    @Override
+    public String toString(){
+        return "["+fromUser+";"+toUser+";"+createdTime+";"+message+"]";
     }
 
     public MessageType getMessageType() {

@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
@@ -54,6 +55,8 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+
 
         vBoxRecieve.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -99,7 +102,8 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     }
 
     @FXML
-    protected void butttonSendAction(ActionEvent e){
+    protected void butttonSendAction(ActionEvent e) throws IOException {
+
         String messageToSend =textAreaSend.getText();
         if (!messageToSend.isEmpty()) {
 
@@ -114,7 +118,10 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
             //TODO for server communication
             Message message = new Message(MessageType.STANDARTMESSAGE, username,
-                    labelSelectedFriend.getText(), LocalDateTime.now(), messageToSend);
+                    selectedFriend, LocalDateTime.now(), messageToSend);
+            objectOutputStream.writeObject(message);
+
+
             //textFlowRecieve.getChildren().add(new Text(textAreaSend.getText()));
             textAreaSend.clear();
             textAreaSend.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku

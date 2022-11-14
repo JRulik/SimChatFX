@@ -72,7 +72,8 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
                   selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
                   //textFlowRecieve.getChildren().clear();
                   //textFlowRecieve.getChildren().add(new Text(selectedFriend));
-                  labelSelectedFriend.setText(selectedFriend);
+                  labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
+                  labelSelectedFriend.setText("  "+selectedFriend);
                   //textAreaSend.setFocusTraversable(true);
                   Platform.runLater(()->textAreaSend.requestFocus());
               }
@@ -92,7 +93,9 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
             throw new RuntimeException(e);
         }
         String[] friends = message.getMessage().split("\\n");
-        listViewFriendList.getItems().addAll(friends);
+        if (!friends[0].equals("")){
+            listViewFriendList.getItems().addAll(friends);
+        }
     }
 
     @FXML
@@ -149,6 +152,6 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     }
 
     public void setLabelUsername(String username) {
-        labelUsername.setText(username);
+        labelUsername.setText(username+"  ");
     }
 }

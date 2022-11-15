@@ -85,7 +85,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.getStyleClass().add("hbox_recieve");
         Text text = new Text(messageRecieved);
-
+        text.setId("text_font_color_white");
         TextFlow textFlow = new TextFlow(text);
         textFlow.getStyleClass().add("textflow_recieve");
         hBox.getChildren().add(textFlow);

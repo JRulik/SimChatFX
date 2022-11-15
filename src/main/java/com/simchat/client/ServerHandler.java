@@ -3,17 +3,24 @@ package com.simchat.client;
 import com.simchat.shared.dataclasses.AbstractNetworkHandler;
 import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
+import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
+
     private String clientUsername;
 
     private VBox vBoxRecieve;
+
     private ListView<String> listViewFriendList;
 
     private Object GUIThread;
@@ -65,6 +72,36 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         }
     }
 
+
+    private void recieveMessage (Message message) throws IOException {
+        String fromUser, toUser, messageRecieved;
+        LocalDateTime createdTime = message.getCreatedTime();
+        fromUser = message.getFromUser();
+        toUser = message.getToUser();
+        messageRecieved = message.getMessage();
+
+        //TODO UPDATE GUI INTERFACE
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.getStyleClass().add("hbox_recieve");
+        Text text = new Text(messageRecieved);
+
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.getStyleClass().add("textflow_recieve");
+        hBox.getChildren().add(textFlow);
+
+        Platform.runLater(()->vBoxRecieve.getChildren().add(hBox));
+
+    }
+
+    public void setvBoxRecieve(VBox vBoxRecieve) {
+        this.vBoxRecieve = vBoxRecieve;
+    }
+
+    public void setListViewFriendList(ListView<String> listViewFriendList) {
+        this.listViewFriendList = listViewFriendList;
+    }
+
     private void addFriend(Message message) {
         addedFriend = message.isServerResponse();
         synchronized (GUIThread) {
@@ -97,15 +134,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         }
     }
 
-    private void recieveMessage (Message message) throws IOException {
-        String fromUser, toUser, messageRecieved;
-        LocalDateTime createdTime = message.getCreatedTime();
-        fromUser = message.getFromUser();
-        toUser = message.getToUser();
-        messageRecieved = message.getMessage();
 
-        //TODO UPDATE GUI INTERFACE
-    }
 
     void sendMessage(Message message) throws IOException {
         objectOutputStream.writeObject(message);
@@ -140,5 +169,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         this.GUIThread = GUIThread;
     }
 
-
+    public void setClientUsername(String clientUsername) {
+       this.clientUsername= clientUsername;
+    }
 }

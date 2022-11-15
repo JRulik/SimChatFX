@@ -95,6 +95,7 @@ public class ControllerLogIn implements Initializable {
 
                 ControllerUserWindow controller = fxmlLoader.getController();
                 controller.setUsername(textFieldUserName.getText());
+                serverHandler.setClientUsername(textFieldUserName.getText())
 ;
                 stage.setScene(scene);
                 stage.setResizable(false);

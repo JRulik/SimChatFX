@@ -46,9 +46,8 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
 
         Message message = new Message(MessageType.ADDFRIEND, textFieldUserName.getText());
         serverHandler.setProcessedRequest(false);
-        serverHandler.sendMessage(message);
-
         serverHandler.setGUIThread(this);
+        serverHandler.sendMessage(message);
         synchronized (this) {
             while (!serverHandler.isProcessedRequest()) {
                 try {

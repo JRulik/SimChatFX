@@ -99,7 +99,26 @@ VBox {
        -fx-background-radius: 20px;
 }
 
+
+
+.textflow_recieve{
+       -fx-font-size: 14;
+      -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
+/*
+       -fx-padding: 5px;
+       -fx-border-insets: 5px;
+       -fx-background-insets: 5px;*/
+    -fx-background-color: #18727E;
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+}
+
 .hbox_send{
        /* -fx-padding: 2,0,2,50;*//*top,right,bottom,left*/
         -fx-padding: 2.0 4.0 0.0 50.0;/*top,right,bottom,left*/
+}
+
+.hbox_recieve{
+       /* -fx-padding: 2,0,2,50;*//*top,right,bottom,left*/
+        -fx-padding: 2.0 50.0 0.0 4.0;/*top,right,bottom,left*/
 }

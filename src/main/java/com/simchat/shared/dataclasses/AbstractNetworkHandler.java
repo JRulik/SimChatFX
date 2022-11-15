@@ -8,8 +8,8 @@ import static com.simchat.server.ServerMain.serverHost;
 
 public abstract class AbstractNetworkHandler {
     protected Socket socket;
-    protected static ObjectInputStream objectInputStream;
-    protected static ObjectOutputStream objectOutputStream;
+    protected ObjectInputStream objectInputStream;
+    protected ObjectOutputStream objectOutputStream;
 
     public void closeEverything(){
         try{

@@ -52,6 +52,9 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         serverHandler.setGUIThread(this);
+        serverHandler.setListViewFriendList(listViewFriendList);
+        serverHandler.setvBoxRecieve(vBoxRecieve);
+
         vBoxRecieve.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
@@ -108,6 +111,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
 
     @FXML
     protected void butttonSendAction(ActionEvent e) throws IOException {
+
+        if(selectedFriend==null){
+            return;
+        }
 
         String messageToSend =textAreaSend.getText();
         if (!messageToSend.isEmpty()) {

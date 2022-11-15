@@ -91,9 +91,15 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         //TODO sort clientHandlers and find by binarysearch
         for (ClientHandler client: clientHandlers) {
             if(client.getClientUsername().equals(toUser)){
-                client.objectOutputStream.writeObject(message);
-                break;
+                try {
+                    client.objectOutputStream.writeObject(message);
+                }
+                catch(Exception e){
+                    client.closeEverything();
+                    client.removeClientHandler();
+                }
             }
+            //break; //cant be break because "dead" threads with client, which needs to bi filtered
         }
 
         String databaseDateFormat = dateTimeToDatabaseDate(createdTime);

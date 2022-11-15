@@ -4,19 +4,20 @@ import java.io.*;
 import java.net.Socket;
 
 import static com.simchat.server.ServerMain.PORT;
+import static com.simchat.server.ServerMain.serverHost;
 
 public abstract class AbstractNetworkHandler {
     protected Socket socket;
     protected static ObjectInputStream objectInputStream;
     protected static ObjectOutputStream objectOutputStream;
 
-    protected void closeEverything(Socket socket, ObjectInputStream bufferReader, ObjectOutputStream bufferedWriter){
+    public void closeEverything(){
         try{
-            if(bufferReader != null){
-                bufferReader.close();
+            if(objectInputStream != null){
+                objectInputStream.close();
             }
-            if(bufferedWriter != null){
-                bufferedWriter.close();
+            if(objectOutputStream != null){
+                objectOutputStream.close();
             }
             if(socket != null){
                 socket.close();
@@ -32,7 +33,7 @@ public abstract class AbstractNetworkHandler {
         objectInputStream = new ObjectInputStream(socket.getInputStream());
     }
     protected void initSocketAndStreams() throws IOException {
-        socket = new Socket("localhost", PORT);
+        socket = new Socket(serverHost, PORT);
         objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectInputStream = new ObjectInputStream(socket.getInputStream());
     }

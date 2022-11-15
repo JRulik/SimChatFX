@@ -18,8 +18,11 @@ import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import com.simchat.client.ClientMain.*;
 
-public class ClientControllerLogIn extends AbstractNetworkHandler implements Initializable {
+import static com.simchat.client.ClientMain.serverHandler;
+
+public class ControllerLogIn implements Initializable {
     @FXML
     private Label labelLogInfo;
     @FXML
@@ -63,11 +66,23 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
             labelLogInfo.setText("Fill User Name or Password!");
         }
         else {
+
             Message message = new Message(MessageType.LOGINMESSAGE,
                     textFieldUserName.getText() + "\n" + passwordFieldPassword.getText());
-            objectOutputStream.writeObject(message);
-            boolean logged = objectInputStream.readBoolean();
-            if (logged) {
+            serverHandler.setProcessedRequest(false);
+            serverHandler.setGUIThread(this);
+            serverHandler.sendMessage(message);
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+
+            if (serverHandler.isLogged()) {
                 labelLogInfo.setText("");
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Main-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
@@ -78,7 +93,7 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
                 Image icon = new Image(ClientMain.class.getResourceAsStream("icon.png"));
                 stage.getIcons().add(icon);
 
-                ClientControllerUserWindow controller = fxmlLoader.getController();
+                ControllerUserWindow controller = fxmlLoader.getController();
                 controller.setUsername(textFieldUserName.getText());
 ;
                 stage.setScene(scene);
@@ -89,17 +104,19 @@ public class ClientControllerLogIn extends AbstractNetworkHandler implements Ini
             }
 
         }
-        textFieldUserName.requestFocus();
+        textFieldUserName.requestFocus(); //proc tady tohle
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            initSocketAndStreams();
+            serverHandler = new ServerHandler(this);
+            Thread thread = new Thread(serverHandler);
+            thread.start();
         } catch (IOException e) {
             buttonLogIn.setDisable(true);
             buttonSingUp.setDisable(true);
-            closeEverything(socket, objectInputStream, objectOutputStream);
+            serverHandler.closeEverything();
             labelLogInfo.setText("[Error] - Could not connect to server");
             e.printStackTrace();
         }

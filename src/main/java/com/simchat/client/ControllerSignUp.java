@@ -6,15 +6,16 @@ import com.simchat.shared.dataclasses.MessageType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
+import static com.simchat.client.ClientMain.serverHandler;
 
-public class ClientControllerSignUp extends AbstractNetworkHandler implements Initializable {
+
+public class ControllerSignUp extends AbstractNetworkHandler implements Initializable {
     @FXML
     private Button buttonSignUp;
     @FXML
@@ -27,6 +28,7 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
     private Label labelLogInfo;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        serverHandler.setGUIThread(this);
         labelLogInfo.setText("");
     }
 
@@ -56,9 +58,20 @@ public class ClientControllerSignUp extends AbstractNetworkHandler implements In
         }else{
             Message message = new Message(MessageType.SIGNUPMESSAGE, textFieldUserName.getText()
                     +"\n"+ passwordFieldPassword.getText());
-            objectOutputStream.writeObject(message);
-            boolean signedUp = objectInputStream.readBoolean();
-            if(signedUp){
+            serverHandler.setProcessedRequest(false);
+            serverHandler.sendMessage(message);
+
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+
+            if(serverHandler.isSignedUp()){
                 labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
                 labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" was created");
                 buttonSignUp.setDisable(true);

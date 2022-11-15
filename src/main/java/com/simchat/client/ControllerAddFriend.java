@@ -12,7 +12,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class ClientControllerAddFriend extends AbstractNetworkHandler implements Initializable {
+import static com.simchat.client.ClientMain.serverHandler;
+
+public class ControllerAddFriend extends AbstractNetworkHandler implements Initializable {
     @FXML
     private Button buttonAddFriend;
     @FXML
@@ -21,6 +23,7 @@ public class ClientControllerAddFriend extends AbstractNetworkHandler implements
     private Label labelLogInfo;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        serverHandler.setGUIThread(this);
         textFieldUserName.requestFocus();
         labelLogInfo.setText("");
     }
@@ -42,9 +45,21 @@ public class ClientControllerAddFriend extends AbstractNetworkHandler implements
         //TODO check if user is in friendlist already
 
         Message message = new Message(MessageType.ADDFRIEND, textFieldUserName.getText());
-        objectOutputStream.writeObject(message);
-        boolean addedFriend = objectInputStream.readBoolean();
-        if(addedFriend){
+        serverHandler.setProcessedRequest(false);
+        serverHandler.sendMessage(message);
+
+        serverHandler.setGUIThread(this);
+        synchronized (this) {
+            while (!serverHandler.isProcessedRequest()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+
+        if(serverHandler.isAddedFriend()){
             labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
             labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
             buttonAddFriend.setDisable(true);

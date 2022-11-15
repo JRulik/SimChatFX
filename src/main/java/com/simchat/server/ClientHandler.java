@@ -17,8 +17,6 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     private int threadID;
 
-
-
     private String clientUsername;
 
     private Database database;
@@ -46,7 +44,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             database = new Database();
             this.clientHandlers.add(this);
         } catch (IOException e) {
-            closeEverything(socket, objectInputStream, objectOutputStream);
+            closeEverything();
             System.out.println("[Thread ID:"+threadID+"] finished");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,13 +64,13 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         case SIGNUPMESSAGE: signUp(message); break;
                         case ADDFRIEND: addFriend(message); break;
                         case RETURNFRIENDLIST: returnFriendList(message); break;
-                        case STANDARTMESSAGE: recieveMessage(message); break;
+                        case STANDARTMESSAGE: recieveAndSendMessage(message); break;
                         //TODO case on returnRecievedMessages
                         default: //TODO logged client
                     }
                 }
                 catch (IOException e) {
-                    closeEverything(socket, objectInputStream, objectOutputStream);
+                    closeEverything();
                     e.printStackTrace();
                     break;
                 } catch (ClassNotFoundException e) {
@@ -83,12 +81,12 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             }
     }
 
-    private void recieveMessage(Message message) throws SQLException, IOException {
-        String fromUser,toUser,messageToSend;
+    private void recieveAndSendMessage(Message message) throws SQLException, IOException {
+        String fromUser,toUser,messageRecieved;
         LocalDateTime createdTime = message.getCreatedTime();
         fromUser = message.getFromUser();
         toUser = message.getToUser();
-        messageToSend=message.getMessage();
+        messageRecieved=message.getMessage();
 
         //TODO sort clientHandlers and find by binarysearch
         for (ClientHandler client: clientHandlers) {
@@ -99,7 +97,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         }
 
         String databaseDateFormat = dateTimeToDatabaseDate(createdTime);
-        database.insertMessage(fromUser,toUser,messageToSend,databaseDateFormat);
+        database.insertMessage(fromUser,toUser,messageRecieved,databaseDateFormat);
     }
 
 
@@ -115,14 +113,13 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         if (database.checkUsernameAndPassword(username,password)) {
             logged=true;
             clientUsername=username;
-            objectOutputStream.writeBoolean(true);
-            objectOutputStream.flush();
+            message = new Message(MessageType.LOGINMESSAGE,true);
         }
         else{
-            objectOutputStream.writeBoolean(false);
-            objectOutputStream.flush();
+            message = new Message(MessageType.LOGINMESSAGE,false);
             System.out.println("tebe neznam");
         }
+        objectOutputStream.writeObject(message);
     }
 
     //TODO save password in hash
@@ -133,13 +130,12 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
         if (!database.userExists(username)) {
             database.addUser(username,password);
-            objectOutputStream.writeBoolean(true);
-            objectOutputStream.flush();
+            message = new Message(MessageType.SIGNUPMESSAGE,true);
         }
         else{
-            objectOutputStream.writeBoolean(false);
-            objectOutputStream.flush();
+            message = new Message(MessageType.SIGNUPMESSAGE,false);
         }
+        objectOutputStream.writeObject(message);
     }
 
     protected void addFriend(Message message) throws IOException, ClassNotFoundException, SQLException {
@@ -149,13 +145,13 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         //TODO manage that you can add yourself as friend and write yourself msg
         if (!friendUserName.equals(this.clientUsername) && database.userExists(friendUserName)) {
             database.addFriend(clientUsername,friendUserName);
-            objectOutputStream.writeBoolean(true);
-            objectOutputStream.flush();
+            message = new Message(MessageType.ADDFRIEND,true);
         }
         else{
-            objectOutputStream.writeBoolean(false);
-            objectOutputStream.flush();
+            message = new Message(MessageType.ADDFRIEND,false);
         }
+        objectOutputStream.writeObject(message);
+
                 /*
         if (!friendUserName.equals(this.clientUsername) && database.userExists(friendUserName)
                 && !database.userInUserFriendlist(this.clientUsername,friendUserName) ) {
@@ -171,7 +167,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     protected void returnFriendList(Message message) throws IOException, ClassNotFoundException, SQLException {
         ArrayList<String> friends =  database.getFriends(clientUsername);
-        Message returnMessage = new Message(MessageType.SERVER_OK);
+        Message returnMessage = new Message(MessageType.RETURNFRIENDLIST);
         StringJoiner joinedFriends = new StringJoiner("\n");
         for (String friend: friends) {
             joinedFriends.add(friend);

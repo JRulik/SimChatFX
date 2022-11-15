@@ -10,10 +10,10 @@ import java.io.*;
 import java.time.LocalDateTime;
 
 public class ClientMain extends Application {
-
+    public static ServerHandler serverHandler;
+    
     @Override
     public void start(Stage stage) throws IOException {
-
 
 
         FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource("LogIn-view.fxml"));

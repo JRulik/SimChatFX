@@ -7,6 +7,8 @@ public class Message implements Serializable {
 
 
     private MessageType messageType;
+
+    private boolean serverResponse;
     private String fromUser;
     private String toUser;
     private LocalDateTime createdTime;
@@ -22,6 +24,15 @@ public class Message implements Serializable {
         this.toUser = null;
         this.createdTime = null;
         this.message = message;
+    }
+
+    public Message(MessageType messageType, boolean serverResponse) {
+        this.messageType = messageType;
+        this.fromUser = null;
+        this.toUser = null;
+        this.createdTime = null;
+        this.message = null;
+        this.serverResponse = serverResponse;
     }
 
     public Message(MessageType messageType) {
@@ -63,6 +74,10 @@ public class Message implements Serializable {
 
     public String getMessage() {
         return message;
+    }
+
+    public boolean isServerResponse() {
+        return serverResponse;
     }
 
 }

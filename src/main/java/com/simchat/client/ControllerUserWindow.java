@@ -6,21 +6,16 @@ import com.simchat.shared.dataclasses.MessageType;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
@@ -28,12 +23,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
-public class ClientControllerUserWindow extends AbstractNetworkHandler implements Initializable {
+import static com.simchat.client.ClientMain.serverHandler;
+
+public class ControllerUserWindow extends AbstractNetworkHandler implements Initializable {
     @FXML
     private Button buttonAddFriend;
     @FXML
@@ -56,8 +51,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-
-
+        serverHandler.setGUIThread(this);
         vBoxRecieve.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
@@ -68,7 +62,13 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
 
         //textFlowRecieve.setBackground(Background.fill(Color.WHITE));// funguje
 
-        listViewRefresh();
+
+        try {
+            listViewRefresh();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         listViewFriendList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
               @Override
               public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
@@ -84,19 +84,24 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
         );
     }
 
-    protected void listViewRefresh(){
+    protected void listViewRefresh() throws IOException {
         listViewFriendList.getItems().clear();
         Message message = new Message(MessageType.RETURNFRIENDLIST);
-        try {
-            objectOutputStream.writeObject(message);
-            message = (Message) objectInputStream.readObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        serverHandler.setProcessedRequest(false);
+        serverHandler.sendMessage(message);
+
+        serverHandler.setGUIThread(this);
+        synchronized (this) {
+            while (!serverHandler.isProcessedRequest()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
-        String[] friends = message.getMessage().split("\\n");
-        if (!friends[0].equals("")){
+        String[] friends = serverHandler.getFriends();
+        if (friends!=null  && !friends[0].equals("")){//kontrola pokud v tabulce neni zadny radek
             listViewFriendList.getItems().addAll(friends);
         }
     }
@@ -119,8 +124,7 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
             //TODO for server communication
             Message message = new Message(MessageType.STANDARTMESSAGE, username,
                     selectedFriend, LocalDateTime.now(), messageToSend);
-            objectOutputStream.writeObject(message);
-
+            serverHandler.sendMessage(message);
 
             //textFlowRecieve.getChildren().add(new Text(textAreaSend.getText()));
             textAreaSend.clear();
@@ -145,6 +149,8 @@ public class ClientControllerUserWindow extends AbstractNetworkHandler implement
         stage.setResizable(false);
         stage.showAndWait();
         //stage.show();
+
+        serverHandler.setGUIThread(this);   //for listViewRefresh, to serverhanlder could notify right thread
         listViewRefresh();
         //textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }

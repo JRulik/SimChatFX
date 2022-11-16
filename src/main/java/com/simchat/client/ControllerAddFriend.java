@@ -21,6 +21,8 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
     private TextField textFieldUserName;
     @FXML
     private Label labelLogInfo;
+
+    private String username;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serverHandler.setGUIThread(this);
@@ -28,23 +30,34 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         labelLogInfo.setText("");
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @FXML
     protected void addFriendButtonClick() throws IOException {
-        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", textFieldUserName.getText())){
+        String userToAdd = textFieldUserName.getText();
+
+        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", userToAdd)){
             Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
             alert.showAndWait();
             textFieldUserName.requestFocus();
             return;
         }
-        if(textFieldUserName.getText().length()<3){
+        if(userToAdd.length()<3){
             labelLogInfo.setText("Username must have at least 3 characters!");
+            textFieldUserName.requestFocus();
+            return;
+        }
+        if(username.equals(userToAdd)){
+            labelLogInfo.setText("You cannot Add yourself man!");
             textFieldUserName.requestFocus();
             return;
         }
 
         //TODO check if user is in friendlist already
 
-        Message message = new Message(MessageType.ADDFRIEND, textFieldUserName.getText());
+        Message message = new Message(MessageType.ADD_FRIEND, textFieldUserName.getText());
         serverHandler.setProcessedRequest(false);
         serverHandler.setGUIThread(this);
         serverHandler.sendMessage(message);
@@ -59,6 +72,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         }
 
         if(serverHandler.isAddedFriend()){
+            serverHandler.getFriendList().add(textFieldUserName.getText());
             labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
             labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
             buttonAddFriend.setDisable(true);

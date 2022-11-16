@@ -98,7 +98,7 @@ VBox {
        -fx-background-insets: 5px;*/
        -fx-font-color: #00FF00;
        -fx-background-color: #43D8DF;
-       -fx-background-radius: 20px;
+       -fx-background-radius: 15px;
 }
 
 #text_font_color_white{
@@ -113,7 +113,7 @@ VBox {
        -fx-border-insets: 5px;
        -fx-background-insets: 5px;*/
     -fx-background-color: #18727E;
-    -fx-background-radius: 20px;
+    -fx-background-radius: 15px;
    /* -fx-text-fill: white;*/
 }
 

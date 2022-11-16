@@ -1,7 +1,6 @@
 package com.simchat.client;
 
 import com.simchat.shared.dataclasses.Message;
-import com.simchat.shared.dataclasses.AbstractNetworkHandler;
 import com.simchat.shared.dataclasses.MessageType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +17,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-import com.simchat.client.ClientMain.*;
 
 import static com.simchat.client.ClientMain.serverHandler;
 
@@ -67,7 +65,7 @@ public class ControllerLogIn implements Initializable {
         }
         else {
 
-            Message message = new Message(MessageType.LOGINMESSAGE,
+            Message message = new Message(MessageType.LOGIN_MESSAGE,
                     textFieldUserName.getText() + "\n" + passwordFieldPassword.getText());
             serverHandler.setProcessedRequest(false);
             serverHandler.setGUIThread(this);

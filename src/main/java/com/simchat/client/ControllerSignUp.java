@@ -56,7 +56,7 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
             passwordFieldPassword.requestFocus();
             labelLogInfo.setText("Passwords don´t match!");
         }else{
-            Message message = new Message(MessageType.SIGNUPMESSAGE, textFieldUserName.getText()
+            Message message = new Message(MessageType.SIGNUP_MESSAGE, textFieldUserName.getText()
                     +"\n"+ passwordFieldPassword.getText());
             serverHandler.setProcessedRequest(false);
             serverHandler.sendMessage(message);

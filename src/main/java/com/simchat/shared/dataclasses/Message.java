@@ -2,17 +2,36 @@ package com.simchat.shared.dataclasses;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Message implements Serializable {
 
 
     private MessageType messageType;
-
     private boolean serverResponse;
+
+    private ArrayList<Message> listOfMessages;
     private String fromUser;
     private String toUser;
     private LocalDateTime createdTime;
     private String message;
+
+    public ArrayList<Message> getListOfMessages() {
+        return listOfMessages;
+    }
+
+    public Message(MessageType messageType, String fromUser, String toUser, ArrayList<Message> listOfMessages) {
+        this.messageType = messageType;
+        this.listOfMessages = listOfMessages;
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+    }
+
+    public Message(MessageType messageType, String fromUser, String toUser) {
+        this.messageType = messageType;
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+    }
 
     public void setMessage(String message) {
         this.message = message;

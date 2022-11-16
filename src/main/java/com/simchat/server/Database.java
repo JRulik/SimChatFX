@@ -1,5 +1,8 @@
 package com.simchat.server;
 
+import com.simchat.shared.dataclasses.Message;
+import com.simchat.shared.dataclasses.MessageType;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,6 +56,17 @@ public class Database {
         preparedStatement.executeUpdate();
     }
 
+    public boolean isFriendOfSender(String senderUsername, String recieverUsername) throws SQLException {
+        PreparedStatement preparedStatement =  connection.prepareStatement("SELECT * FROM "+recieverUsername+"_friendlist WHERE username=?");
+        preparedStatement.setString(1, senderUsername);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList<String> friends = new ArrayList<>();
+        while(resultSet.next()){
+            return true;
+        }
+        return false;
+    }
+
     public ArrayList<String> getFriends(String username) throws SQLException {
         PreparedStatement preparedStatement =  connection.prepareStatement("SELECT * FROM "+username+"_friendlist");
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -81,14 +95,21 @@ public class Database {
             throw new RuntimeException(e);
         }
     }
+    private String dateTimeToDatabaseDate(LocalDateTime createdTime) {
+        return String.valueOf(createdTime).replace('T',' ');
+    }
+    private LocalDateTime databaseDateToDatetime(String date) {
+        //LocalDateTime = date.replace(' ','T');
+        return null;
+    }
 
-    public void insertMessage(String fromUser, String toUser, String messageToSend, String createdTime) throws SQLException {
-
+    public void insertMessage(String fromUser, String toUser, String messageToSend, LocalDateTime createdTime) throws SQLException {
+        String databaseDateFormat = dateTimeToDatabaseDate(createdTime);
         PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO "+fromUser+"_messages " +
                 "(fromUser, toUser,datetime,message) VALUES (?,?,?,?)");
         preparedStatement.setString(1, fromUser);
         preparedStatement.setString(2, toUser);
-        preparedStatement.setString(3, createdTime);
+        preparedStatement.setString(3, databaseDateFormat);
         preparedStatement.setString(4, messageToSend);
         preparedStatement.executeUpdate();
 
@@ -96,10 +117,29 @@ public class Database {
                 "(fromUser, toUser,datetime,message) VALUES (?,?,?,?)");
         preparedStatement.setString(1, fromUser);
         preparedStatement.setString(2, toUser);
-        preparedStatement.setString(3, createdTime);
+        preparedStatement.setString(3, databaseDateFormat);
         preparedStatement.setString(4, messageToSend);
         preparedStatement.executeUpdate();
 
+    }
+
+    public ArrayList<Message> getMessagesBetweenUsers(String fromUser, String toUser) throws SQLException {
+        PreparedStatement preparedStatement =  connection.prepareStatement("SELECT * FROM "+fromUser+"_messages WHERE (fromUser=? AND toUser=?) OR (fromUser=? AND toUser=?)");
+        preparedStatement.setString(1, fromUser);
+        preparedStatement.setString(2, toUser);
+        preparedStatement.setString(3, toUser);
+        preparedStatement.setString(4, fromUser);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList<Message> messages = new ArrayList<>();
+        while(resultSet.next()){
+            LocalDateTime dateTime= databaseDateToDatetime(String.valueOf(resultSet.getString(4)));
+            String from,to,message;
+            from = String.valueOf(resultSet.getString(2));
+            to=String.valueOf(resultSet.getString(3));
+            message = String.valueOf(resultSet.getString(5));
+            messages.add(new Message(MessageType.STANDART_MESSAGE, from, to,dateTime, message));
+        }
+        return messages;
     }
     /*
     public boolean userInUserFriendlist(String clientUsername, String friendUserName) {

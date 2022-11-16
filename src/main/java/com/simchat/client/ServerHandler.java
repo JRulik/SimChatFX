@@ -13,6 +13,9 @@ import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
@@ -22,20 +25,24 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     private VBox vBoxRecieve;
 
     private ListView<String> listViewFriendList;
-
     private Object GUIThread;
 
-    private String[] friends;
+    private ArrayList<String> friendList;
     private boolean logged;
     private boolean signedUp;
 
     private boolean addedFriend;
     private boolean processedRequest;
 
+    private HashMap<String,ArrayList<Message>> messageList;
+
+
+
     public ServerHandler(Object GUIThread) throws IOException {
         this.logged=false;
         initSocketAndStreams();
         this.GUIThread=GUIThread;
+        messageList=new HashMap<>();
     }
 
     /*
@@ -54,11 +61,12 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                 message = (Message) objectInputStream.readObject();
                 MessageType typeOfMessage = message.getMessageType();
                 switch (typeOfMessage) {
-                    case LOGINMESSAGE: logInClient(message); break;
-                    case SIGNUPMESSAGE: signUp(message); break;
-                    case ADDFRIEND: addFriend(message); break;
-                    case RETURNFRIENDLIST: recieveFriendList(message); break;
-                    case STANDARTMESSAGE: recieveMessage(message); break;
+                    case LOGIN_MESSAGE: logInClient(message); break;
+                    case SIGNUP_MESSAGE: signUp(message); break;
+                    case ADD_FRIEND: addFriend(message); break;
+                    case RETURN_FRIENDLIST: recieveFriendList(message); break;
+                    case STANDART_MESSAGE: recieveMessage(message); break;
+                    case RETURN_MESSAGES_BETWEEN_USERS: recieveMessagesBetweenUsers(message); break;
                     //TODO case on returnRecievedMessages
                     default: //TODO logged client
                 }
@@ -72,6 +80,15 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         }
     }
 
+    private void recieveMessagesBetweenUsers(Message message) {
+        //TODO naplnit lokal pole se zrpavami
+        messageList.put(message.getToUser(),message.getListOfMessages());
+        synchronized (GUIThread) {
+            processedRequest=true;
+            GUIThread.notify();
+        }
+    }
+
 
     private void recieveMessage (Message message) throws IOException {
         String fromUser, toUser, messageRecieved;
@@ -80,17 +97,32 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         toUser = message.getToUser();
         messageRecieved = message.getMessage();
 
-        //TODO UPDATE GUI INTERFACE
-        HBox hBox = new HBox();
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.getStyleClass().add("hbox_recieve");
-        Text text = new Text(messageRecieved);
-        text.setId("text_font_color_white");
-        TextFlow textFlow = new TextFlow(text);
-        textFlow.getStyleClass().add("textflow_recieve");
-        hBox.getChildren().add(textFlow);
 
-        Platform.runLater(()->vBoxRecieve.getChildren().add(hBox));
+        if(!listViewFriendList.getItems().contains(fromUser)){
+            Platform.runLater(()->listViewFriendList.getItems().add(fromUser));
+        }
+        if(!messageList.containsKey(fromUser)){
+            messageList.put(fromUser, new ArrayList<Message>());
+        }
+        messageList.get(fromUser).add(message);
+
+        if(listViewFriendList.getSelectionModel().getSelectedItem()!= null &&
+                listViewFriendList.getSelectionModel().getSelectedItem().equals(fromUser)) {
+            //SHOW
+            HBox hBox = new HBox();
+            hBox.setAlignment(Pos.CENTER_LEFT);
+            hBox.getStyleClass().add("hbox_recieve");
+            Text text = new Text(messageRecieved);
+            text.setId("text_font_color_white");
+            TextFlow textFlow = new TextFlow(text);
+            textFlow.getStyleClass().add("textflow_recieve");
+            hBox.getChildren().add(textFlow);
+            Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+
+        }
+        else{
+            //TODO UPDATE GUI THAT OTHER USER SEND YOU MSG (+1 to that row in tab or something)
+        }
 
     }
 
@@ -111,7 +143,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
     private void recieveFriendList(Message message) {
-        friends = message.getMessage().split("\\n");
+        friendList = new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
         synchronized (GUIThread) {
             processedRequest=true;
             GUIThread.notify();
@@ -138,6 +170,9 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     void sendMessage(Message message) throws IOException {
         objectOutputStream.writeObject(message);
+        if(message.getMessageType()==MessageType.STANDART_MESSAGE){
+            messageList.get(message.getToUser()).add(message);
+        }
     }
 
 
@@ -145,8 +180,8 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         return addedFriend;
     }
 
-    public String[] getFriends() {
-        return friends;
+    public ArrayList<String> getFriendList() {
+        return friendList;
     }
 
     public boolean isLogged() {
@@ -171,5 +206,9 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     public void setClientUsername(String clientUsername) {
        this.clientUsername= clientUsername;
+    }
+
+    public ArrayList<Message> getLocalMessagesBetweenUsers(String selectedFriend) {
+        return this.messageList.get(selectedFriend);
     }
 }

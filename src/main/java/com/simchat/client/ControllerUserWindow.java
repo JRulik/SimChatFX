@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import static com.simchat.client.ClientMain.serverHandler;
@@ -81,15 +82,69 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                   labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
                   labelSelectedFriend.setText("  "+selectedFriend);
                   //textAreaSend.setFocusTraversable(true);
-                  Platform.runLater(()->textAreaSend.requestFocus());
+                  Platform.runLater(()-> {
+                      textAreaSend.requestFocus();
+                      vBoxRecieveRefresh();
+                  });
               }
           }
         );
     }
 
+    protected void vBoxRecieveRefresh(){
+        vBoxRecieve.getChildren().clear();
+        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)== null) {
+            Message message = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,this.username,selectedFriend);
+            serverHandler.setProcessedRequest(false);
+            serverHandler.setGUIThread(this);
+            //TODO catch this exception -> dont knwo, mby turn off everything
+            try {
+                serverHandler.sendMessage(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        }
+        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) {
+            for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
+                if (msg.getFromUser().equals(this.username)) {
+                    HBox hBox = new HBox();
+                    hBox.setAlignment(Pos.CENTER_RIGHT);
+                    hBox.getStyleClass().add("hbox_send");
+                    Text text = new Text(msg.getMessage());
+                    TextFlow textFlow = new TextFlow(text);
+                    textFlow.getStyleClass().add("textflow_send");
+                    hBox.getChildren().add(textFlow);
+                    vBoxRecieve.getChildren().add(hBox);
+                } else {
+                    HBox hBox = new HBox();
+                    hBox.setAlignment(Pos.CENTER_LEFT);
+                    hBox.getStyleClass().add("hbox_recieve");
+                    Text text = new Text(msg.getMessage());
+                    text.setId("text_font_color_white");
+                    TextFlow textFlow = new TextFlow(text);
+                    textFlow.getStyleClass().add("textflow_recieve");
+                    hBox.getChildren().add(textFlow);
+                    vBoxRecieve.getChildren().add(hBox);
+                }
+            }
+        }
+
+
+
+    }
+
     protected void listViewRefresh() throws IOException {
         listViewFriendList.getItems().clear();
-        Message message = new Message(MessageType.RETURNFRIENDLIST);
+        Message message = new Message(MessageType.RETURN_FRIENDLIST);
         serverHandler.setProcessedRequest(false);
         serverHandler.sendMessage(message);
 
@@ -103,8 +158,8 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                 }
             }
         }
-        String[] friends = serverHandler.getFriends();
-        if (friends!=null  && !friends[0].equals("")){//kontrola pokud v tabulce neni zadny radek
+        ArrayList<String> friends = serverHandler.getFriendList();
+        if (friends!=null  && !friends.get(0).equals("")){//kontrola pokud v tabulce neni zadny radek
             listViewFriendList.getItems().addAll(friends);
         }
     }
@@ -129,7 +184,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
             vBoxRecieve.getChildren().add(hBox);
 
             //TODO for server communication
-            Message message = new Message(MessageType.STANDARTMESSAGE, username,
+            Message message = new Message(MessageType.STANDART_MESSAGE, username,
                     selectedFriend, LocalDateTime.now(), messageToSend);
             serverHandler.sendMessage(message);
 
@@ -154,10 +209,13 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);;
         stage.setResizable(false);
+        ControllerAddFriend controller = fxmlLoader.getController();
+        controller.setUsername(username);
         stage.showAndWait();
         //stage.show();
 
         serverHandler.setGUIThread(this);   //for listViewRefresh, to serverhanlder could notify right thread
+        //TODO without using database, only serverHandler loocal ListView<String> listViewFriendList
         listViewRefresh();
         //textFlowRecieve.requestFocus();//aby se ztratil focus po odjeti z tlacitka po kliku
     }

@@ -45,7 +45,12 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
                     try {
                         this.wait();
                     } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
+                        alert.showAndWait();
+                        serverHandler.closeEverything();
+                        System.out.println("[Error] -Thread interruption error!");
+                        ex.printStackTrace();
+                        System.exit(0);
                     }
                 }
             }

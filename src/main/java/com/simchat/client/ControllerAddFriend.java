@@ -28,6 +28,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         serverHandler.setGUIThread(this);
         textFieldUserName.requestFocus();
         labelLogInfo.setText("");
+        setUsername(serverHandler.getClientUsername());
     }
 
     public void setUsername(String username) {
@@ -36,7 +37,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
 
 
     @FXML
-    protected void addFriendButtonClick() throws IOException {
+    protected void addFriendButtonClick()  {
 
         if(isCorrectInput() ){
             Message message = new Message(MessageType.ADD_FRIEND, textFieldUserName.getText());
@@ -48,7 +49,12 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
                     try {
                         this.wait();
                     } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
+                        alert.showAndWait();
+                        serverHandler.closeEverything();
+                        System.out.println("[Error] -Thread interruption error!");
+                        ex.printStackTrace();
+                        System.exit(0);
                     }
                 }
             }

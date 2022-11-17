@@ -26,7 +26,7 @@ public class ControllerLogIn implements Initializable {
     @FXML
     private PasswordField passwordFieldPassword;
     @FXML
-    protected void signUpButtonClick(ActionEvent e) throws IOException {
+    protected void signUpButtonClick(ActionEvent e){
         Stage stage = stageCreator.createStage("SignUp-view.fxml","icon.png",
                 "styles.css","SimChatFX - Sign Up");
         stage.initModality(Modality.APPLICATION_MODAL);;
@@ -35,7 +35,7 @@ public class ControllerLogIn implements Initializable {
     }
 
     @FXML
-    protected void loginButtonClick(ActionEvent e) throws IOException {
+    protected void loginButtonClick(ActionEvent e) {
         String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
         if( Pattern.matches(regexPattern, textFieldUserName.getText())
                 || Pattern.matches(regexPattern, passwordFieldPassword.getText())){
@@ -58,7 +58,12 @@ public class ControllerLogIn implements Initializable {
                     try {
                         this.wait();
                     } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
+                        alert.showAndWait();
+                        serverHandler.closeEverything();
+                        System.out.println("[Error] -Thread interruption error!");
+                        ex.printStackTrace();
+                        System.exit(0);
                     }
                 }
             }

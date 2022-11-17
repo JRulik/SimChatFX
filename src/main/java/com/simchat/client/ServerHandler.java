@@ -4,12 +4,11 @@ import com.simchat.shared.dataclasses.AbstractNetworkHandler;
 import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -17,48 +16,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static com.simchat.client.ClientMain.serverHandler;
+
 public class ServerHandler extends AbstractNetworkHandler implements Runnable{
-
-
     private String clientUsername;
-
     private VBox vBoxRecieve;
-
     private ListView<String> listViewFriendList;
     private Object GUIThread;
-
     private ArrayList<String> friendList;
     private boolean logged;
     private boolean signedUp;
-
     private boolean addedFriend;
     private boolean processedRequest;
-
     private HashMap<String,ArrayList<Message>> messageList;
 
-
-
-    public ServerHandler(Object GUIThread) throws IOException {
-        this.logged=false;
-        initSocketAndStreams();
-        this.GUIThread=GUIThread;
-        messageList=new HashMap<>();
-    }
     public ServerHandler() throws IOException {
         this.logged=false;
         initSocketAndStreams();
         messageList=new HashMap<>();
     }
-    /*
-    public ServerHandler(String clientUsername, VBox vBoxRecieve, ListView<String> listViewFriendList) {
-        this.clientUsername = clientUsername;
-        this.vBoxRecieve = vBoxRecieve;
-        this.listViewFriendList = listViewFriendList;
-    }*/
-
     @Override
     public void run() {
-        String messageFromClient;
         Message message;
         while (socket.isConnected()) {
             try {
@@ -73,18 +51,18 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                     case RETURN_MESSAGES_BETWEEN_USERS: recieveMessagesBetweenUsers(message); break;
                     default:
                 }
-            } catch (IOException e) {
+            } catch (IOException|ClassNotFoundException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Server communication error!", ButtonType.OK);
+                alert.showAndWait();
                 closeEverything();
+                System.out.println("[Error] -Server communication error!");
                 e.printStackTrace();
-                break;
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                System.exit(0);
             }
         }
     }
 
     private void recieveMessagesBetweenUsers(Message message) {
-        //TODO naplnit lokal pole se zrpavami
         messageList.put(message.getToUser(),message.getListOfMessages());
         synchronized (GUIThread) {
             processedRequest=true;
@@ -95,34 +73,32 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     private void recieveMessage (Message message) throws IOException {
         String fromUser, toUser, messageRecieved;
-        LocalDateTime createdTime = message.getCreatedTime();
         fromUser = message.getFromUser();
         toUser = message.getToUser();
         messageRecieved = message.getMessage();
 
-
         if (fromUser.equals(clientUsername)){ //if msg from this user, set fromUser for next commnads
             fromUser=toUser;
         }
-        if(!listViewFriendList.getItems().contains(fromUser)){
+        if(!listViewFriendList.getItems().contains(fromUser)){//if fromUser not in friendlist
             String finalFromUser = fromUser;
             Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
         }
-        if(!messageList.containsKey(fromUser)){
+        if(!messageList.containsKey(fromUser)){//if fromUser not in messageList
             messageList.put(fromUser, new ArrayList<Message>());
         }
         messageList.get(fromUser).add(message);
+
+        //Show message on screen if fromUser is selected in list
         if(listViewFriendList.getSelectionModel().getSelectedItem()!= null &&
                 listViewFriendList.getSelectionModel().getSelectedItem().equals(fromUser)) {
-            //SHOW
-            fromUser = message.getFromUser();//get variable back to correct value from message
+            fromUser = message.getFromUser();//get variable fromUser back to correct value from message
             if (fromUser.equals(clientUsername)) {
                 ((ControllerUserWindow) GUIThread).showSendMessage(messageRecieved);
             }
             else {
                 ((ControllerUserWindow) GUIThread).showRecievedMessage(messageRecieved);
             }
-
         }
         else{
             //TODO UPDATE GUI THAT OTHER USER SEND YOU MSG (+1 to that row in tab or something)
@@ -171,16 +147,20 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
 
-
-    protected void sendMessage(Message message) throws IOException {
-        objectOutputStream.writeObject(message);
-        if(message.getMessageType()==MessageType.STANDART_MESSAGE){
+    protected void sendMessage(Message message)  {
+        try {
+            objectOutputStream.writeObject(message);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection with server lost!", ButtonType.OK);
+            alert.showAndWait();
+            closeEverything();
+            System.out.println("[Error] - Can´t send message to server!");
+            e.printStackTrace();
+            System.exit(0);
+        }
+        if(message.getMessageType()==MessageType.STANDART_MESSAGE){//save message to local messages
             messageList.get(message.getToUser()).add(message);
         }
-    }
-
-    protected void sendBlockingMessage(){
-
     }
 
     public boolean isAddedFriend() {

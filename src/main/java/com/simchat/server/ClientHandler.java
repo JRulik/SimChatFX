@@ -101,21 +101,25 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         if(!database.isFriendOfSender(fromUser,toUser)){
                 database.addFriend(toUser,fromUser);
         }
-
+        if(!database.isFriendOfSender(toUser,fromUser)){
+            database.addFriend(fromUser,toUser);
+        }
         //TODO sort clientHandlers and find by binarysearch
+        //TODO fix that there are null clients in clientHandlers -> clean them
         for (ClientHandler client: clientHandlers) {
-            if(client.getClientUsername().equals(toUser)){
-                try {
-                    client.objectOutputStream.writeObject(message);
-                }
-                catch(Exception e){
-                    client.closeEverything();
-                    client.removeClientHandler();
+            if (client.getClientUsername()!=null) {
+                if (client.getClientUsername().equals(toUser) || client.getClientUsername().equals(fromUser)
+                        && !client.equals(this)) {
+                    try {
+                        client.objectOutputStream.writeObject(message);
+                    } catch (Exception e) {
+                        client.closeEverything();
+                        client.removeClientHandler();
+                    }
                 }
             }
-            //break; //cant be break because "dead" threads with client, which needs to bi filtered
+            //break; //cant be break because "dead" threads with client, which needs to be filtered
         }
-
         database.insertMessage(fromUser,toUser,messageRecieved,createdTime);
     }
 

@@ -101,26 +101,27 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         messageRecieved = message.getMessage();
 
 
+        if (fromUser.equals(clientUsername)){ //if msg from this user, set fromUser for next commnads
+            fromUser=toUser;
+        }
         if(!listViewFriendList.getItems().contains(fromUser)){
-            Platform.runLater(()->listViewFriendList.getItems().add(fromUser));
+            String finalFromUser = fromUser;
+            Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
         }
         if(!messageList.containsKey(fromUser)){
             messageList.put(fromUser, new ArrayList<Message>());
         }
         messageList.get(fromUser).add(message);
-
         if(listViewFriendList.getSelectionModel().getSelectedItem()!= null &&
                 listViewFriendList.getSelectionModel().getSelectedItem().equals(fromUser)) {
             //SHOW
-            HBox hBox = new HBox();
-            hBox.setAlignment(Pos.CENTER_LEFT);
-            hBox.getStyleClass().add("hbox_recieve");
-            Text text = new Text(messageRecieved);
-            text.setId("text_font_color_white");
-            TextFlow textFlow = new TextFlow(text);
-            textFlow.getStyleClass().add("textflow_recieve");
-            hBox.getChildren().add(textFlow);
-            Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+            fromUser = message.getFromUser();//get variable back to correct value from message
+            if (fromUser.equals(clientUsername)) {
+                ((ControllerUserWindow) GUIThread).showSendMessage(messageRecieved);
+            }
+            else {
+                ((ControllerUserWindow) GUIThread).showRecievedMessage(messageRecieved);
+            }
 
         }
         else{

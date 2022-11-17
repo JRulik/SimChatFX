@@ -39,7 +39,8 @@ public class DatabaseMaster extends Database{
         addUser("honza","aznoh");
         addUser("asdasd","asdasd");
         addUser("qweqwe","qweqwe");
-
+        addUser("werwer","werwer");
+        addUser("sdfsdf","sdfsdf");
     }
 
 

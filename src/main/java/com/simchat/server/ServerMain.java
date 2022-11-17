@@ -20,7 +20,9 @@ public class ServerMain {
         try {
             serverSocket= new ServerSocket(PORT);
         } catch (IOException e) {
-            System.out.println("Cannont create server!");
+            System.out.println("[Server Error] - Cannot open Server socket!");
+            e.printStackTrace();
+            System.exit(0);
         }
         Server server = new Server(serverSocket);
         server.start();

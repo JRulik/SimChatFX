@@ -16,10 +16,12 @@ public class Server {
             databaseMaster = new DatabaseMaster();
             databaseMaster.databaseInit();
             databaseMaster.resetDatabase();
-            databaseMaster.fillTableUsers();
+            databaseMaster.fillTestUsers();
         } catch (SQLException e) {
-            System.out.println("Cannont connect to database!");
+            System.out.println("[Server Error] - Cannot open Database!");
             e.printStackTrace();
+            closeServerSocket();
+            System.exit(0);
         }
 
         this.serverSocket = serverSocket;
@@ -38,6 +40,7 @@ public class Server {
             }
         }
         catch(IOException e){
+            System.out.println("[Server Error] - Cannot open communication with client!");
             e.printStackTrace();
         }
     }

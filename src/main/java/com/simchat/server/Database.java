@@ -4,7 +4,6 @@ import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -76,24 +75,14 @@ public class Database {
         }
         return friends;
     }
-    public void createTableUserFriendList(String username){
-        try {
+    public void createTableUserFriendList(String username) throws SQLException {
             //TODO set username unique
            connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50), PRIMARY KEY(username))").execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
     }
-    public void createTableUserMessages(String username){
-        try {
+    public void createTableUserMessages(String username) throws SQLException {
             connection.prepareStatement("CREATE TABLE "+username+"_messages (ID INTEGER NOT NULL AUTO_INCREMENT," +
                     "fromUser VARCHAR(50),toUser VARCHAR(50)," +
                     "datetime DATETIME,message TEXT, PRIMARY KEY(ID))").execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
     }
     private String dateTimeToDatabaseDate(LocalDateTime createdTime) {
         return String.valueOf(createdTime).replace('T',' ');
@@ -141,23 +130,5 @@ public class Database {
         }
         return messages;
     }
-    /*
-    public boolean userInUserFriendlist(String clientUsername, String friendUserName) {
 
-    }*/
-
-/*
-@Converter(autoApply = true)
-public class LocalDateAttributeConverter implements
-        AttributeConverter<LocalDate, Date> {
-
-    @Override
-    public Date convertToDatabaseColumn(LocalDate locDate) {
-        return (locDate == null ? null : Date.valueOf(locDate));
-    }
-
-    @Override
-    public LocalDate convertToEntityAttribute(Date sqlDate) {
-        return (sqlDate == null ? null : sqlDate.toLocalDate());
-    }*/
 }

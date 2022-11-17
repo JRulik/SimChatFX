@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -65,6 +66,19 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                       messageWindowRefresh();
                   });
               });
+        textAreaSend.setOnKeyPressed(keyEvent->{
+            if (keyEvent.getCode()== KeyCode.ENTER){
+                //this doesn´t work because even bubbling, "\n" is catched faster then this handler gets called
+                //keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
+                if (keyEvent.isShiftDown()) {
+                    textAreaSend.appendText(System.getProperty("line.separator"));
+                } else {
+                    textAreaSend.setText(textAreaSend.getText().substring(0, textAreaSend.getText().length() - 2));//delete \n from string
+                    butttonSendAction(new ActionEvent());
+                }
+            }
+        });
+
           }
 
     @FXML

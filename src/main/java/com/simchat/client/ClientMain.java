@@ -1,6 +1,7 @@
 package com.simchat.client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -12,9 +13,10 @@ public class ClientMain extends Application {
     public static StageCreator stageCreator;
     
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         stage = stageCreator.createStage(stage, "LogIn-view.fxml","icon.png",
                 "styles.css","SimChatFX");
+        stage.setOnCloseRequest(e -> System.exit(0));
         stage.show();
     }
 
@@ -25,12 +27,8 @@ public class ClientMain extends Application {
             Thread thread = new Thread(serverHandler);
             thread.start();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection with server lost!", ButtonType.OK);
-            alert.showAndWait();
-            serverHandler.closeEverything();
             System.out.println("[Error] - Can´t connect to server!");
             e.printStackTrace();
-            System.exit(0);
         }
         launch();
 

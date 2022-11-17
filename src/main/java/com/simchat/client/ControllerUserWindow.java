@@ -136,6 +136,8 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
             }
         }
         //show messages on massageWindow
+        lastSendMessageTimeStamp = null;
+        lastRecieveMessageTimeStamp = null;
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
             for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
                 if (msg.getFromUser().equals(this.username)) {

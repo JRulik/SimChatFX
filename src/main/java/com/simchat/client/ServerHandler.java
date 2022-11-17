@@ -52,8 +52,6 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                     default:
                 }
             } catch (IOException|ClassNotFoundException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Server communication error!", ButtonType.OK);
-                alert.showAndWait();
                 closeEverything();
                 System.out.println("[Error] -Server communication error!");
                 e.printStackTrace();

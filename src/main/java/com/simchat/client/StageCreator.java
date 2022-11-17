@@ -21,9 +21,9 @@ public class StageCreator {
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
             alert.showAndWait();
-            serverHandler.closeEverything();
-            System.out.println("[Error] - Could not load scene from Fxml: " + FxmlPath);
             e.printStackTrace();
+            //serverHandler.closeEverything();
+            System.out.println("[Error] - Could not load scene from Fxml: " + FxmlPath);
             System.exit(0);
         }
         Image icon = new Image(ClientMain.class.getResourceAsStream(iconPath));
@@ -38,26 +38,8 @@ public class StageCreator {
     }
     public Stage createStage(String FxmlPath, String iconPath, String stylesPath,String title) {
         Stage stage = new Stage();
-        FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource(FxmlPath));
-        Scene scene = null;
-        try {
-            scene = new Scene(fxmlLoader.load());
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
-            alert.showAndWait();
-            serverHandler.closeEverything();
-            System.out.println("[Error] - Could not load scene from Fxml: " + FxmlPath);
-            e.printStackTrace();
-            System.exit(0);
-        }
-        Image icon = new Image(ClientMain.class.getResourceAsStream(iconPath));
-        stage.getIcons().add(icon);
-
-        String css = this.getClass().getResource(stylesPath).toExternalForm();
-        scene.getStylesheets().add(css);
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        return stage;
+        return createStage( stage, FxmlPath, iconPath, stylesPath, title);
     }
+
+
 }

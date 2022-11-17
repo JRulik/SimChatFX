@@ -22,6 +22,10 @@ public class ControllerLogIn implements Initializable {
     @FXML
     private Label labelLogInfo;
     @FXML
+    private Button buttonLogIn;
+    @FXML
+    private Button buttonSingUp;
+    @FXML
     private TextField textFieldUserName;
     @FXML
     private PasswordField passwordFieldPassword;
@@ -74,6 +78,7 @@ public class ControllerLogIn implements Initializable {
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 stage= stageCreator.createStage(stage,"Main-view.fxml","icon.png","styles.css"
                         ,"SimChatFX - "+ textFieldUserName.getText());
+                stage.setOnCloseRequest(event -> System.exit(0));
                 stage.show();
             } else {
                 labelLogInfo.setText("Wrong User Name or Password!");
@@ -85,7 +90,16 @@ public class ControllerLogIn implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        serverHandler.setGUIThread(this);
+        if (serverHandler!=null){
+            serverHandler.setGUIThread(this);
+        }
+        else{
+            buttonLogIn.setDisable(true);
+            buttonSingUp.setDisable(true);
+            labelLogInfo.setText("[Error] - Can´t connect to server!");
+        }
+
+
     }
 
 

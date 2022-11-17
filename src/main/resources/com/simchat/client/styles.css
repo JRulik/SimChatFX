@@ -1,132 +1,29 @@
 
+/*---------------------------------------------------------------------------------------------*/
+/*------------------------------ List view and cells styles -----------------------------------*/
 .listViewBackground{
 	-fx-background-color: #81F1FE;
 }
-
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color: linear-gradient(#3FA8B5 0%, #3095A2 5%, #1F7E8A 50%, #18727E 60%, #25919E 100%);
     -fx-text-fill: white;
 }
 
-.list-cell:even { /* <=== changed to even */
+.list-cell:even {
     -fx-background-color: white;
 }
 
+/*---------------------------------------------------------------------------------------------*/
+/*------------------------------ List view scroll pane styles ---------------------------------*/
 .list-cell:odd { -fx-background-color: #43D8DF; /* 1 */ }
 .list-cell:even { -fx-background-color: #43D8DF; /* for information */ }
-
 .list-cell:filled:hover {
     -fx-background-color: #3FA8B5;
     -fx-text-fill: white;
 }
-
 .list-cell{
     -fx-font-size: 14;
 }
-
-
-
-VBox {
-    -fx-background-color: #81F1FE;
-}
-
-.labelSelectedFriend {
-    -fx-background-color: #18727E;
-    -fx-background-radius: 20px;
-    -fx-text-fill: white;
-}
-
-.labelUsername {
-    -fx-background-color: #20DBE4;
-    -fx-background-radius: 20px;
-}
-
-/*
-.textAreaBackground{
-	-fx-background-color: #81F1FE;
-}*/
-
-.textArea{
-	-fx-background-color: #34CDE0;
-	-fx-font-size: 14;
-}
-
-.guiBackground{
-	-fx-background-color: #34CDE0;
-}
-
-.labelLogInfo{
-	-fx-font-style: normal;
-	-fx-font-weight: bold;
-	-fx-font-family: "Arial";
-	-fx-font-size: 14;
-}
-
-.labelLogInfoError{
-    -fx-font-size: 13;
-	-fx-text-fill: #B02D2D;
-}
-
-.labelLogInfoSuccess{
-     -fx-font-size: 13;
-	-fx-text-fill: green;
-}
-
-.button{
-    -fx-background-color:
-        linear-gradient(#3FA8B5 0%, #3095A2 5%, #1F7E8A 50%, #18727E 60%, #25919E 100%);
-    -fx-background-radius: 5,5,4;
-    -fx-font-family: "Arial";
-    -fx-font-size: 14;
-    -fx-text-fill: white;
-}
-.button:focused{
-    -fx-focus-color: transparent;
-    -fx-background-insets: -1.4, 0, 1, 2;
-}
-.button:hover{
-    -fx-focus-color: transparent;
-    -fx-background-insets: -1.4, 0, 1, 2;
-}
-
-.textflow_send{
-       -fx-font-size: 14;
-      -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
-/*
-       -fx-padding: 5px;
-       -fx-border-insets: 5px;
-       -fx-background-insets: 5px;*/
-       -fx-font-color: #00FF00;
-       -fx-background-color: #43D8DF;
-       -fx-background-radius: 15px;
-}
-
-#text_font_color_white{
-       -fx-fill: white;
-}
-
-.textflow_recieve{
-       -fx-font-size: 14;
-      -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
-/*
-       -fx-padding: 5px;
-       -fx-border-insets: 5px;
-       -fx-background-insets: 5px;*/
-    -fx-background-color: #18727E;
-    -fx-background-radius: 15px;
-   /* -fx-text-fill: white;*/
-}
-
-.hbox_send{
-       /* -fx-padding: 2,0,2,50;*//*top,right,bottom,left*/
-        -fx-padding: 2.0 4.0 0.0 50.0;/*top,right,bottom,left*/
-}
-
-.hbox_recieve{
-       /* -fx-padding: 2,0,2,50;*//*top,right,bottom,left*/
-        -fx-padding: 2.0 50.0 0.0 4.0;/*top,right,bottom,left*/
-}
-
 
 .scroll-pane {
     -fx-background-color: #18727E;
@@ -153,3 +50,104 @@ VBox {
     -fx-background-color: white;
     -fx-background-radius: 5em;
 }
+
+/*---------------------------------------------------------------------------------------------*/
+/*----------------------------------------- Vbox and GUI  --------------------------------------*/
+
+VBox {
+    -fx-background-color: #81F1FE;
+}
+
+.guiBackground{
+	-fx-background-color: #34CDE0;
+}
+
+.textArea{
+	-fx-background-color: #34CDE0;
+	-fx-font-size: 14;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+/*------------------------------------ Messages in GUI  --------------------------------------*/
+.textflow_send{
+       -fx-font-size: 14;
+      -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
+/*
+       -fx-padding: 5px;
+       -fx-border-insets: 5px;
+       -fx-background-insets: 5px;*/
+       -fx-font-color: #00FF00;
+       -fx-background-color: #43D8DF;
+       -fx-background-radius: 15px;
+}
+
+#text_font_color_white{
+       -fx-fill: white;
+}
+
+.textflow_recieve{
+     -fx-font-size: 14;
+    -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
+    -fx-background-color: #18727E;
+    -fx-background-radius: 15px;
+}
+
+.hbox_send{
+        -fx-padding: 2.0 4.0 0.0 50.0;/*top,right,bottom,left*/
+}
+
+.hbox_recieve{
+        -fx-padding: 2.0 50.0 0.0 4.0;/*top,right,bottom,left*/
+}
+
+/*---------------------------------------------------------------------------------------------*/
+/*------------------------------------- Labels styles -----------------------------------------*/
+
+.labelSelectedFriend {
+    -fx-background-color: #18727E;
+    -fx-background-radius: 20px;
+    -fx-text-fill: white;
+}
+
+.labelUsername {
+    -fx-background-color: #20DBE4;
+    -fx-background-radius: 20px;
+}
+
+.labelLogInfo{
+	-fx-font-style: normal;
+	-fx-font-weight: bold;
+	-fx-font-family: "Arial";
+	-fx-font-size: 14;
+}
+
+.labelLogInfoError{
+    -fx-font-size: 13;
+	-fx-text-fill: #B02D2D;
+}
+
+.labelLogInfoSuccess{
+     -fx-font-size: 13;
+	-fx-text-fill: green;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+/*------------------------------------- button styles -----------------------------------------*/
+
+.button{
+    -fx-background-color:
+        linear-gradient(#3FA8B5 0%, #3095A2 5%, #1F7E8A 50%, #18727E 60%, #25919E 100%);
+    -fx-background-radius: 5,5,4;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14;
+    -fx-text-fill: white;
+}
+.button:focused{
+    -fx-focus-color: transparent;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+.button:hover{
+    -fx-focus-color: transparent;
+    -fx-background-insets: -1.4, 0, 1, 2;
+}
+

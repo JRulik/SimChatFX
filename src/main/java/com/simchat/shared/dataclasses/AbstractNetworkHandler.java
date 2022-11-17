@@ -11,6 +11,18 @@ public abstract class AbstractNetworkHandler {
     protected ObjectInputStream objectInputStream;
     protected ObjectOutputStream objectOutputStream;
 
+
+    protected void initSocketAndStreams(Socket socket) throws IOException {
+        this.socket = socket;
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
+    }
+    protected void initSocketAndStreams() throws IOException {
+        socket = new Socket(serverHost, PORT);
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
+    }
+
     public void closeEverything(){
         try{
             if(objectInputStream != null){
@@ -23,18 +35,8 @@ public abstract class AbstractNetworkHandler {
                 socket.close();
             }
         }catch(IOException e){
+            System.out.println("[Error] -Cannot close communication!");
             e.printStackTrace();
         }
-    }
-
-    protected void initSocketAndStreams(Socket socket) throws IOException {
-        this.socket = socket;
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
-    }
-    protected void initSocketAndStreams() throws IOException {
-        socket = new Socket(serverHost, PORT);
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
     }
 }

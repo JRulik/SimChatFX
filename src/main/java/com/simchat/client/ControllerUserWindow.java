@@ -18,7 +18,10 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -40,7 +43,8 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     private Label labelUsername;
     private String username;
     private String selectedFriend;
-
+    private LocalDateTime lastRecieveMessageTimeStamp;
+    private LocalDateTime lastSendMessageTimeStamp;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -88,9 +92,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         }
         String messageToSend =textAreaSend.getText();
         if (!messageToSend.isEmpty()) {
-            showSendMessage(messageToSend);
+            LocalDateTime timeStamp = LocalDateTime.now();
             Message message = new Message(MessageType.STANDART_MESSAGE, username,
-                    selectedFriend, LocalDateTime.now(), messageToSend);
+                    selectedFriend, timeStamp, messageToSend);
+            showSendMessage(messageToSend,timeStamp);
             serverHandler.sendMessage(message);
             textAreaSend.clear();
             textAreaSend.requestFocus();//to lost focus from button, back to textArea
@@ -134,16 +139,32 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
             for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
                 if (msg.getFromUser().equals(this.username)) {
-                    showSendMessage(msg.getMessage());
+                    showSendMessage(msg.getMessage(),msg.getCreatedTime());
                 } else {
-                    showRecievedMessage(msg.getMessage());
+                    showRecievedMessage(msg.getMessage(),msg.getCreatedTime());
                 }
             }
         }
     }
 
-    //TODO remember time of last sendmessage and if +1>min print time
-    public void showSendMessage(String messageSend){
+    public void showTimeStampBetweenMessages(Pos position,LocalDateTime timeStamp){
+        HBox hBox = new HBox();
+        hBox.setAlignment(position);
+        Text text = new Text(timeStamp.format(DateTimeFormatter.ofPattern("dd.MM. HH:mm")));
+        text.setId("text_font_color_grey");
+        TextFlow textFlow = new TextFlow(text);
+        textFlow.getStyleClass().add("textflow_timeStamp");
+        hBox.getChildren().add(textFlow);
+        Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+    }
+
+    public void showSendMessage(String messageSend, LocalDateTime messageTime){
+        if (lastSendMessageTimeStamp==null ||
+                Duration.between(lastSendMessageTimeStamp.truncatedTo(ChronoUnit.MINUTES),
+                        messageTime.truncatedTo(ChronoUnit.MINUTES)).toMinutes()>=1){
+                lastSendMessageTimeStamp = messageTime;
+                 showTimeStampBetweenMessages(Pos.CENTER_RIGHT,lastSendMessageTimeStamp);
+        }
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_RIGHT);
         hBox.getStyleClass().add("hbox_send");
@@ -154,8 +175,12 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
     }
 
-    //TODO remember time of last recieved and if +1>min print time
-    public void showRecievedMessage(String messageRecieved){
+    public void showRecievedMessage(String messageRecieved, LocalDateTime messageTime){
+        if (lastRecieveMessageTimeStamp==null ||
+                Duration.between(lastRecieveMessageTimeStamp,messageTime).toMinutes()>=1){
+            lastRecieveMessageTimeStamp = messageTime;
+            showTimeStampBetweenMessages(Pos.CENTER_LEFT,lastRecieveMessageTimeStamp);
+        }
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.getStyleClass().add("hbox_recieve");

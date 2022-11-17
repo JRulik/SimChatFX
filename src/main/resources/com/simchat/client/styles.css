@@ -81,6 +81,19 @@ VBox {
        -fx-background-radius: 15px;
 }
 
+.textflow_timeStamp{
+       -fx-font-size: 10;
+      -fx-padding: 2,5,2,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
+/*
+       -fx-padding: 5px;
+       -fx-border-insets: 5px;
+       -fx-background-insets: 5px;*/
+}
+
+#text_font_color_grey{
+       -fx-fill: grey;
+}
+
 #text_font_color_white{
        -fx-fill: white;
 }

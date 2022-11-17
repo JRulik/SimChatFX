@@ -87,9 +87,9 @@ public class Database {
     private String dateTimeToDatabaseDate(LocalDateTime createdTime) {
         return String.valueOf(createdTime).replace('T',' ');
     }
-    private LocalDateTime databaseDateToDatetime(String date) {
-        //LocalDateTime = date.replace(' ','T');
-        return null;
+    private LocalDateTime databaseDateToDateTime(String date) {
+        LocalDateTime dateTime =  LocalDateTime.parse(date.replace(' ','T'));
+        return dateTime;
     }
 
     public void insertMessage(String fromUser, String toUser, String messageToSend, LocalDateTime createdTime) throws SQLException {
@@ -121,7 +121,7 @@ public class Database {
         ResultSet resultSet = preparedStatement.executeQuery();
         ArrayList<Message> messages = new ArrayList<>();
         while(resultSet.next()){
-            LocalDateTime dateTime= databaseDateToDatetime(String.valueOf(resultSet.getString(4)));
+            LocalDateTime dateTime= databaseDateToDateTime(String.valueOf(resultSet.getString(4)));
             String from,to,message;
             from = String.valueOf(resultSet.getString(2));
             to=String.valueOf(resultSet.getString(3));

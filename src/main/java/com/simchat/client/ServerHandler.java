@@ -76,6 +76,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         fromUser = message.getFromUser();
         toUser = message.getToUser();
         messageRecieved = message.getMessage();
+        LocalDateTime timeStamp = message.getCreatedTime();
 
         if (fromUser.equals(clientUsername)){ //if msg from this user, set fromUser for next commnads
             fromUser=toUser;
@@ -94,10 +95,10 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                 listViewFriendList.getSelectionModel().getSelectedItem().equals(fromUser)) {
             fromUser = message.getFromUser();//get variable fromUser back to correct value from message
             if (fromUser.equals(clientUsername)) {
-                ((ControllerUserWindow) GUIThread).showSendMessage(messageRecieved);
+                ((ControllerUserWindow) GUIThread).showSendMessage(messageRecieved,timeStamp);
             }
             else {
-                ((ControllerUserWindow) GUIThread).showRecievedMessage(messageRecieved);
+                ((ControllerUserWindow) GUIThread).showRecievedMessage(messageRecieved,timeStamp);
             }
         }
         else{

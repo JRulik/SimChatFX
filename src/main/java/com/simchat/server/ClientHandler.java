@@ -23,21 +23,8 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     private boolean logged;
 
-
-    public int getThreadID() {
-        return threadID;
-    }
-
-    public String getClientUsername() {
-        return clientUsername;
-    }
-
-    public boolean isLogged() {
-        return logged;
-    }
     public ClientHandler(int threadID, Socket socket) {
         logged = false;
-
         this.threadID=threadID;
         try {
             initSocketAndStreams(socket);
@@ -45,16 +32,17 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             this.clientHandlers.add(this);
         } catch (IOException e) {
             closeEverything();
-            System.out.println("[Thread ID:"+threadID+"] finished");
+            System.out.println("[Thread ID:"+threadID+"] [ERROR] - can´t inicialize socket communication with client");
+            e.printStackTrace();
         } catch (SQLException e) {
+            closeEverything();
+            System.out.println("[Thread ID:"+threadID+"] [ERROR] - can´t inicialize SQL connection");
             e.printStackTrace();
         }
     }
 
-
     @Override
     public void run() {
-            String messageFromClient;
             while(socket.isConnected()){
                 try{
                     Message message = (Message) objectInputStream.readObject();
@@ -70,16 +58,19 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         default: //TODO logged client
                     }
                 }
-                catch (IOException e) {
+                catch (IOException|ClassNotFoundException e) {
                     closeEverything();
+                    System.out.println("[Thread ID:"+threadID+"] [ERROR] - Can´t communicate with client");
                     e.printStackTrace();
                     break;
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    closeEverything();
+                    System.out.println("[Thread ID:"+threadID+"] [ERROR] - Can´t communicate with SQL database");
+                    e.printStackTrace();
+                    break;
                 }
             }
+        System.out.println("[Thread ID:"+threadID+"] [Finished]");
     }
 
     private void sendMessagesBetweenUsers(Message message) throws SQLException, IOException {
@@ -99,15 +90,14 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         messageRecieved=message.getMessage();
 
         if(!database.isFriendOfSender(fromUser,toUser)){
-                database.addFriend(toUser,fromUser);
+            database.addFriend(toUser,fromUser);
         }
         if(!database.isFriendOfSender(toUser,fromUser)){
             database.addFriend(fromUser,toUser);
         }
         //TODO sort clientHandlers and find by binarysearch
-        //TODO fix that there are null clients in clientHandlers -> clean them
         for (ClientHandler client: clientHandlers) {
-            if (client.getClientUsername()!=null) {
+            if (client.getClientUsername()!=null) {   //TODO fix that there are null clients in clientHandlers -> clean them
                 if (client.getClientUsername().equals(toUser) || client.getClientUsername().equals(fromUser)
                         && !client.equals(this)) {
                     try {
@@ -124,9 +114,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
     }
 
 
-
-
-    protected void logInClient(Message message) throws IOException, ClassNotFoundException, SQLException {
+    protected void logInClient(Message message) throws IOException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];
@@ -138,13 +126,12 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         }
         else{
             message = new Message(MessageType.LOGIN_MESSAGE,false);
-            System.out.println("tebe neznam");
         }
         objectOutputStream.writeObject(message);
     }
 
     //TODO save password in hash
-    protected void signUp(Message message) throws IOException, ClassNotFoundException, SQLException {
+    protected void signUp(Message message) throws IOException, SQLException {
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];
@@ -159,7 +146,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         objectOutputStream.writeObject(message);
     }
 
-    protected void addFriend(Message message) throws IOException, ClassNotFoundException, SQLException {
+    protected void addFriend(Message message) throws IOException, SQLException {
         String friendUserName = message.getMessage();
 
         //TODO here would be better to have MSG type from server with more return possibilities
@@ -172,21 +159,9 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             message = new Message(MessageType.ADD_FRIEND,false);
         }
         objectOutputStream.writeObject(message);
-
-                /*
-        if (!friendUserName.equals(this.clientUsername) && database.userExists(friendUserName)
-                && !database.userInUserFriendlist(this.clientUsername,friendUserName) ) {
-            database.addFriend(clientUsername,friendUserName);
-            message = new Message(MessageType.SERVER_OK);
-            objectOutputStream.writeObject(message);
-        }
-        else{
-            message = new Message(MessageType.SERVER_ERROR,"User already in friendlist");
-            objectOutputStream.writeObject(message);
-        }*/
     }
 
-    protected void returnFriendList(Message message) throws IOException, ClassNotFoundException, SQLException {
+    protected void returnFriendList(Message message) throws IOException, SQLException {
         ArrayList<String> friends =  database.getFriends(clientUsername);
         Message returnMessage = new Message(MessageType.RETURN_FRIENDLIST);
         StringJoiner joinedFriends = new StringJoiner("\n");
@@ -199,6 +174,10 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
 
     public void removeClientHandler(){
         clientHandlers.remove(this);
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
     }
 
 }

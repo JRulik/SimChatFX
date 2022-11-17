@@ -31,10 +31,6 @@ import static com.simchat.client.ClientMain.serverHandler;
 
 public class ControllerUserWindow extends AbstractNetworkHandler implements Initializable {
     @FXML
-    private Button buttonAddFriend;
-    @FXML
-    private Button buttonSend;
-    @FXML
     private TextArea textAreaSend;
     @FXML
     private VBox vBoxRecieve;
@@ -55,6 +51,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         serverHandler.setGUIThread(this);
         serverHandler.setListViewFriendList(listViewFriendList);
         serverHandler.setvBoxRecieve(vBoxRecieve);
+        setUsername(serverHandler.getClientUsername());
 
         vBoxRecieve.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -64,15 +61,11 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
             }
         });
 
-        //textFlowRecieve.setBackground(Background.fill(Color.WHITE));// funguje
-
-
         try {
             listViewRefresh();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         listViewFriendList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>(){
               @Override
               public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {

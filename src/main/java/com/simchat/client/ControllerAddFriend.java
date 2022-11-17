@@ -34,52 +34,63 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         this.username = username;
     }
 
+
     @FXML
     protected void addFriendButtonClick() throws IOException {
-        String userToAdd = textFieldUserName.getText();
 
-        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", userToAdd)){
+        if(isCorrectInput() ){
+            Message message = new Message(MessageType.ADD_FRIEND, textFieldUserName.getText());
+            serverHandler.setProcessedRequest(false);
+            serverHandler.setGUIThread(this);
+            serverHandler.sendMessage(message);
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+            if(serverHandler.isAddedFriend()){
+                serverHandler.getFriendList().add(textFieldUserName.getText());
+                labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
+                labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
+                buttonAddFriend.setDisable(true);
+            }else{
+                labelLogInfo.getStyleClass().add("labelLogInfoError");
+                labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" doesn´t exists");
+            }
+        }
+    }
+
+    private boolean isCorrectInput() {
+        //TODO check if user is in friendlist already
+
+        String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
+        labelLogInfo.getStyleClass().add("labelLogInfoError");
+
+        if (serverHandler.getFriendList().contains(textFieldUserName.getText())){
+            labelLogInfo.setText("Username already in friendlist!");
+            textFieldUserName.requestFocus();
+            return false;
+        }
+        if (Pattern.matches(regexPattern, textFieldUserName.getText())) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
             alert.showAndWait();
             textFieldUserName.requestFocus();
-            return;
+            return false;
         }
-        if(userToAdd.length()<3){
+        if (textFieldUserName.getText().length() < 3) {
             labelLogInfo.setText("Username must have at least 3 characters!");
             textFieldUserName.requestFocus();
-            return;
+            return false;
         }
-        if(username.equals(userToAdd)){
+        if(username.equals(textFieldUserName.getText())){
             labelLogInfo.setText("You cannot Add yourself man!");
             textFieldUserName.requestFocus();
-            return;
+            return false;
         }
-
-        //TODO check if user is in friendlist already
-
-        Message message = new Message(MessageType.ADD_FRIEND, textFieldUserName.getText());
-        serverHandler.setProcessedRequest(false);
-        serverHandler.setGUIThread(this);
-        serverHandler.sendMessage(message);
-        synchronized (this) {
-            while (!serverHandler.isProcessedRequest()) {
-                try {
-                    this.wait();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-
-        if(serverHandler.isAddedFriend()){
-            serverHandler.getFriendList().add(textFieldUserName.getText());
-            labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
-            labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
-            buttonAddFriend.setDisable(true);
-        }else{
-            labelLogInfo.getStyleClass().add("labelLogInfoError");
-            labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" doesn´t exists");
-        }
-
+        return true;
     }
 }

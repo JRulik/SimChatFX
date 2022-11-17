@@ -34,30 +34,9 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
 
     @FXML
     protected void signUp() throws IOException {
-
-        labelLogInfo.getStyleClass().add("labelLogInfoError");
-        if( Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", textFieldUserName.getText())
-        || Pattern.matches(".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*", passwordFieldPassword.getText())){
-            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
-            alert.showAndWait();
-            textFieldUserName.requestFocus();
-            return;
-        }
-
-        if(textFieldUserName.getText().length()<3){
-            labelLogInfo.setText("Username must have at least 3 characters!");
-            textFieldUserName.requestFocus();
-            return;
-        }
-        if(passwordFieldPassword.getText().length()<5){
-            labelLogInfo.setText("Password must have at least 5 characters!");
-            passwordFieldPassword.requestFocus();
-        }else if (!passwordFieldPassword.getText().equals(passwordFieldPassword2.getText())){
-            passwordFieldPassword.requestFocus();
-            labelLogInfo.setText("Passwords don´t match!");
-        }else{
+        if (isCorrectInput()) {
             Message message = new Message(MessageType.SIGNUP_MESSAGE, textFieldUserName.getText()
-                    +"\n"+ passwordFieldPassword.getText());
+                    + "\n" + passwordFieldPassword.getText());
             serverHandler.setProcessedRequest(false);
             serverHandler.sendMessage(message);
 
@@ -70,17 +49,42 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
                     }
                 }
             }
-
-            if(serverHandler.isSignedUp()){
+            if (serverHandler.isSignedUp()) {
                 labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
-                labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" was created");
+                labelLogInfo.setText("User: \"" + textFieldUserName.getText() + "\" was created");
                 buttonSignUp.setDisable(true);
-            }
-            else{
-                labelLogInfo.setText("Username already exist. Use other username!");
+            } else {
+                labelLogInfo.setText("Username already exists!");
                 textFieldUserName.requestFocus();
             }
         }
     }
 
+    private boolean isCorrectInput() {
+        String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
+        labelLogInfo.getStyleClass().add("labelLogInfoError");
+        if (Pattern.matches(regexPattern, textFieldUserName.getText())
+                || Pattern.matches(regexPattern, passwordFieldPassword.getText())) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            alert.showAndWait();
+            textFieldUserName.requestFocus();
+            return false;
+        }
+        if (textFieldUserName.getText().length() < 3) {
+            labelLogInfo.setText("Username must have at least 3 characters!");
+            textFieldUserName.requestFocus();
+            return false;
+        }
+        if (passwordFieldPassword.getText().length() < 5) {
+            labelLogInfo.setText("Password must have at least 5 characters!");
+            passwordFieldPassword.requestFocus();
+            return false;
+        }
+        if (!passwordFieldPassword.getText().equals(passwordFieldPassword2.getText())) {
+            passwordFieldPassword.requestFocus();
+            labelLogInfo.setText("Passwords don´t match!");
+            return false;
+        }
+        return true;
+    }
 }

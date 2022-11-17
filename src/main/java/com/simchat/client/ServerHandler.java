@@ -44,7 +44,11 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         this.GUIThread=GUIThread;
         messageList=new HashMap<>();
     }
-
+    public ServerHandler() throws IOException {
+        this.logged=false;
+        initSocketAndStreams();
+        messageList=new HashMap<>();
+    }
     /*
     public ServerHandler(String clientUsername, VBox vBoxRecieve, ListView<String> listViewFriendList) {
         this.clientUsername = clientUsername;
@@ -67,8 +71,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                     case RETURN_FRIENDLIST: recieveFriendList(message); break;
                     case STANDART_MESSAGE: recieveMessage(message); break;
                     case RETURN_MESSAGES_BETWEEN_USERS: recieveMessagesBetweenUsers(message); break;
-                    //TODO case on returnRecievedMessages
-                    default: //TODO logged client
+                    default:
                 }
             } catch (IOException e) {
                 closeEverything();
@@ -168,13 +171,16 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
 
 
-    void sendMessage(Message message) throws IOException {
+    protected void sendMessage(Message message) throws IOException {
         objectOutputStream.writeObject(message);
         if(message.getMessageType()==MessageType.STANDART_MESSAGE){
             messageList.get(message.getToUser()).add(message);
         }
     }
 
+    protected void sendBlockingMessage(){
+
+    }
 
     public boolean isAddedFriend() {
         return addedFriend;
@@ -210,5 +216,9 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     public ArrayList<Message> getLocalMessagesBetweenUsers(String selectedFriend) {
         return this.messageList.get(selectedFriend);
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
     }
 }

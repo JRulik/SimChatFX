@@ -63,12 +63,12 @@ VBox {
 }
 
 .labelLogInfoError{
-    -fx-font-size: 14;
+    -fx-font-size: 13;
 	-fx-text-fill: #B02D2D;
 }
 
 .labelLogInfoSuccess{
-     -fx-font-size: 14;
+     -fx-font-size: 13;
 	-fx-text-fill: green;
 }
 

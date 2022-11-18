@@ -2,6 +2,7 @@ package com.simchat.client;
 
 import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -78,7 +79,7 @@ public class ControllerLogIn implements Initializable {
                 Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 stage= stageCreator.createStage(stage,"Main-view.fxml","icon.png","styles.css"
                         ,"SimChatFX - "+ textFieldUserName.getText());
-                stage.setOnCloseRequest(event -> System.exit(0));
+                stage.setOnCloseRequest(event -> {Platform.exit();System.exit(0);});
                 stage.show();
             } else {
                 labelLogInfo.setText("Wrong User Name or Password!");

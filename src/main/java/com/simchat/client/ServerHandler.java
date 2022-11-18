@@ -81,23 +81,13 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         }
         if(!listViewFriendList.getItems().contains(fromUser)){//if fromUser not in friendlist
             String finalFromUser = fromUser;
+            friendList.add(fromUser);
+            messageList.put(fromUser, null);
             Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
         }
-        //TODO tady jsi to nekde pomrvil, problem s rozdilem lokalni a database pamaeti
-        if(!messageList.containsKey(fromUser)){//if fromUser messagelist is empty, fill from database
-            Message messageGetDatabaseMessages = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,
-                    clientUsername,fromUser);
-            //processedRequest = false; //TODO THIS IS THE PROBLEM
-            //objectOutputStream.writeObject(messageGetDatabaseMessages);
-            //while (processedRequest)
-
-        }else{
-            if( messageList.get(fromUser)==null){
-                messageList.put(fromUser, new ArrayList<Message>());
-            }
+        if(messageList.get(fromUser) !=null){
             messageList.get(fromUser).add(message);
         }
-
 
         //Show message on screen if fromUser is selected in list
         if(listViewFriendList.getSelectionModel().getSelectedItem()!= null &&
@@ -134,6 +124,11 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     private void recieveFriendList(Message message) {
         friendList = new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
+        messageList=new HashMap<>();
+        for( String friend: friendList){
+            messageList.put(friend,null);
+        }
+
         synchronized (GUIThread) {
             processedRequest=true;
             GUIThread.notify();

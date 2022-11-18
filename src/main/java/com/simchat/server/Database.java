@@ -3,9 +3,14 @@ package com.simchat.server;
 import com.simchat.shared.dataclasses.Message;
 import com.simchat.shared.dataclasses.MessageType;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.simchat.server.ServerMain.*;
 
@@ -19,14 +24,51 @@ public class Database {
 
     //TODO hashovani hesla
     public boolean checkUsernameAndPassword(String username, String password) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ? AND password= ?");
+
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ? ");
         preparedStatement.setString(1, username);
-        preparedStatement.setString(2, password);
         ResultSet resultSet =  preparedStatement.executeQuery();
         if(resultSet.next()){
-            return true;
+            byte[] hashedPassword = resultSet.getBytes(2);
+            byte[] salt = resultSet.getBytes(3);
+            byte[] hashedPasswordToCompare = hashPassword( password, salt);
+            if(Arrays.equals(hashedPassword,hashedPasswordToCompare)){
+                return true;
+            }
         }
         return false;
+
+    }
+
+    private byte[] hashPassword(String password, byte[]salt){
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("[ERROR] Cannot hash password!");
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        md.update(salt);
+        return md.digest(password.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void addUser(String username, String password) throws SQLException {
+
+        //hash password
+        byte[] salt = new byte[16];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(salt);
+        byte[] hashedPassword = hashPassword(password, salt);
+
+        PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO users VALUES (?,?,?)");
+        preparedStatement.setString(1, username);
+        preparedStatement.setBytes(2, hashedPassword);
+        preparedStatement.setBytes(3, salt);
+        preparedStatement.executeUpdate();
+
+        createTableUserFriendList(username);
+        createTableUserMessages(username);
     }
 
     public boolean userExists(String username) throws SQLException {
@@ -37,16 +79,6 @@ public class Database {
             return true;
         }
         return false;
-    }
-
-    public void addUser(String username, String password) throws SQLException {
-        PreparedStatement preparedStatement =  connection.prepareStatement("INSERT INTO users VALUES (?,?)");
-        preparedStatement.setString(1, username);
-        preparedStatement.setString(2, password);
-        preparedStatement.executeUpdate();
-
-        createTableUserFriendList(username);
-        createTableUserMessages(username);
     }
 
     public void addFriend(String username, String friendUserName) throws SQLException {

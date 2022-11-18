@@ -1,5 +1,6 @@
 package com.simchat.server;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -16,7 +17,8 @@ public class DatabaseMaster extends Database{
         connection.prepareStatement("CREATE DATABASE IF NOT EXISTS "+nameOfDatabase).execute();
         connection = DriverManager.getConnection(url+"/"+nameOfDatabase,user,password);
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS users (username VARCHAR(50) not null" +
-                ", password VARCHAR(50) not null" +
+                ", password VARBINARY(512) not null" +
+                ", salt VARBINARY(16) not null"+
                 ", PRIMARY KEY(username))").execute(); //ID must be set as a kay, when AUTO_INCREMENT (dont know why ->otherwise exception)
 
     }
@@ -31,9 +33,7 @@ public class DatabaseMaster extends Database{
 
     public void resetTableUsers() throws SQLException {
         connection.prepareStatement("DROP TABLE IF EXISTS users").execute();
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS users (username VARCHAR(50) not null" +
-                ", password VARCHAR(50) not null" +
-                ", PRIMARY KEY(username))").execute(); //ID must be set as a kay, when AUTO_INCREMENT (dont know why ->otherwise exception)
+        databaseInit();
     }
 
     public void fillTestUsers() throws SQLException {

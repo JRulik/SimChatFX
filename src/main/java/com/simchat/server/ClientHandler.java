@@ -6,6 +6,7 @@ import com.simchat.shared.dataclasses.MessageType;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         Iterator<ClientHandler> iterator = clientHandlers.iterator();
         while (iterator.hasNext()){
             ClientHandler client = iterator.next();
-            if (client.getClientUsername()!=null) {   //TODO fix that there are null clients in clientHandlers -> clean them
+            if (client.getClientUsername()!=null) {
                 if (client.getClientUsername().equals(toUser) || client.getClientUsername().equals(fromUser)
                         && !client.equals(this)) {
                     try {
@@ -135,7 +136,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
     }
 
     //TODO save password in hash
-    protected void signUp(Message message) throws IOException, SQLException {
+    protected void signUp(Message message) throws IOException, SQLException{
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];
         String password = usernameAndPassword[1];

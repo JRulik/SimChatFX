@@ -17,12 +17,15 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.simchat.client.ClientMain.serverHandler;
@@ -64,6 +67,16 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                 (ObservableValue<? extends String> observableValue, String s, String t1)-> {
                     if ((s == null  || !s.equals(t1))&& t1!=null) {
                         selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
+
+                        //TODO change color of listcell when messages rising ->cellfactory or something
+                        //this is workaround cleanup notification
+                        int indexOfSelectedFriend = listViewFriendList.getItems().indexOf(selectedFriend);
+                        int indexOfBrace = selectedFriend.indexOf("]");
+                        if(indexOfBrace!=-1){
+                            selectedFriend = selectedFriend.substring(indexOfBrace+1+1,selectedFriend.length());//another +1 for blank space
+                            listViewFriendList.getItems().set(indexOfSelectedFriend,selectedFriend);
+                        }
+
                         labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
                         labelSelectedFriend.setText("  " + selectedFriend);
                         Platform.runLater(() -> {
@@ -72,14 +85,15 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                         });
                     }
               });
+
         textAreaSend.setOnKeyPressed(keyEvent->{
             if (keyEvent.getCode()== KeyCode.ENTER){
                 //this doesn´t work because even bubbling, "\n" is catched faster then this handler gets called
-                //keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
+                keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
                 if (keyEvent.isShiftDown()) {
                     textAreaSend.appendText(System.getProperty("line.separator"));
                 } else {
-                    textAreaSend.setText(textAreaSend.getText().substring(0, textAreaSend.getText().length() - 2));//delete \n from string
+                    textAreaSend.setText(textAreaSend.getText().substring(0, textAreaSend.getText().length() -1));//delete \n from string
                     butttonSendAction(new ActionEvent());
                 }
             }
@@ -118,7 +132,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         String selectedFreindLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
         listViewFriendList.getItems().clear();
         //if frienlist is not inicialized or inicialized with empty string (user with no friends) ask server (again)
-        if (serverHandler.getFriendList()==null || serverHandler.getFriendList().get(0).equals("")) {
+        if (serverHandler.getFriendList()==null) {
             Message message = new Message(MessageType.RETURN_FRIENDLIST);
             serverHandler.setProcessedRequest(false);
             serverHandler.sendMessage(message);
@@ -139,9 +153,9 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                 }
             }
         }
-        ArrayList<String> friends = serverHandler.getFriendList();
-        if (friends!=null  && !friends.get(0).equals("")){//check if there is only empty row in returned data from database
-            listViewFriendList.getItems().addAll(friends);
+        HashMap<String,Integer> friends = serverHandler.getFriendList();
+        if (friends!=null){//check if there is only empty row in returned data from database
+            listViewFriendList.getItems().addAll(friends.keySet());
         }
         if(selectedFreindLocal!=null){//select friend who was selected before clearing listView
             selectedFriend=selectedFreindLocal;
@@ -176,6 +190,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         lastSendMessageTimeStamp = null;
         lastRecieveMessageTimeStamp = null;
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
+            serverHandler.getFriendList().put(selectedFriend,0);
             for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
                 if (msg.getFromUser().equals(this.username)) {
                     showSendMessage(msg.getMessage(),msg.getCreatedTime());

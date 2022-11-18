@@ -59,7 +59,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
                 }
             }
             if(serverHandler.isAddedFriend()){
-                serverHandler.getFriendList().add(textFieldUserName.getText());
+                serverHandler.getFriendList().put(textFieldUserName.getText(),0);
                 serverHandler.putInMessageList(textFieldUserName.getText(),null);
                 labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
                 labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
@@ -76,7 +76,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
         labelLogInfo.getStyleClass().add("labelLogInfoError");
 
-        if (serverHandler.getFriendList().contains(textFieldUserName.getText())){
+        if (serverHandler.getFriendList().containsKey(textFieldUserName.getText())){
             labelLogInfo.setText("Username already in friendlist!");
             textFieldUserName.requestFocus();
             return false;

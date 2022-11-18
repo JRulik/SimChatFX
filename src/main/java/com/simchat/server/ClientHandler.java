@@ -55,9 +55,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         case ADD_FRIEND: addFriend(message); break;
                         case RETURN_FRIENDLIST: returnFriendList(message); break;
                         case STANDART_MESSAGE: recieveAndSendMessage(message); break;
-                        case RETURN_MESSAGES_BETWEEN_USERS: sendMessagesBetweenUsers(message);
-                        //TODO case on returnRecievedMessages
-                        default: //TODO logged client
+                        case RETURN_MESSAGES_BETWEEN_USERS: sendMessagesBetweenUsers(message);break;
                     }
                 }
                 catch (IOException|ClassNotFoundException e) {
@@ -135,7 +133,6 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         objectOutputStream.writeObject(message);
     }
 
-    //TODO save password in hash
     protected void signUp(Message message) throws IOException, SQLException{
         String[] usernameAndPassword = message.getMessage().split("\\r?\\n|\\r");//also only \\n
         String username = usernameAndPassword[0];

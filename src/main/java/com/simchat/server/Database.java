@@ -22,7 +22,6 @@ public class Database {
         connection = DriverManager.getConnection(url+"/"+nameOfDatabase,user,password);
     }
 
-    //TODO hashovani hesla
     public boolean checkUsernameAndPassword(String username, String password) throws SQLException {
 
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ? ");
@@ -108,8 +107,7 @@ public class Database {
         return friends;
     }
     public void createTableUserFriendList(String username) throws SQLException {
-            //TODO set username unique
-           connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50), PRIMARY KEY(username))").execute();
+           connection.prepareStatement("CREATE TABLE "+username+"_friendlist (username VARCHAR(50) UNIQUE, PRIMARY KEY(username))").execute();
     }
     public void createTableUserMessages(String username) throws SQLException {
             connection.prepareStatement("CREATE TABLE "+username+"_messages (ID INTEGER NOT NULL AUTO_INCREMENT," +

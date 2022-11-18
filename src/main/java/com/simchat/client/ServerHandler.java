@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static com.simchat.client.ClientMain.serverHandler;
 
@@ -23,7 +24,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     private VBox vBoxRecieve;
     private ListView<String> listViewFriendList;
     private Object GUIThread;
-    private ArrayList<String> friendList;
+    private HashMap<String,Integer> friendList;
     private boolean logged;
     private boolean signedUp;
     private boolean addedFriend;
@@ -79,9 +80,9 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         if (fromUser.equals(clientUsername)){ //if msg from this user, set fromUser for next commnads
             fromUser=toUser;
         }
-        if(!listViewFriendList.getItems().contains(fromUser)){//if fromUser not in friendlist
+        if(!friendList.containsKey(fromUser)){//if fromUser not in friendlist
             String finalFromUser = fromUser;
-            friendList.add(fromUser);
+            friendList.put(fromUser,0);
             messageList.put(fromUser, null);
             Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
         }
@@ -101,7 +102,22 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             }
         }
         else{
-            //TODO UPDATE GUI THAT OTHER USER SEND YOU MSG (+1 to that row in tab or something)
+            friendList.put(fromUser,friendList.get(fromUser)+1);
+
+            //TODO change color of listcell when messages rising ->cellfactory or something
+            //this is workaround notification
+            for (int i=0; i< listViewFriendList.getItems().size(); i++){
+                String friend = listViewFriendList.getItems().get(i);
+                int indexOfBrace = friend.indexOf("]");
+                if(indexOfBrace!=-1){
+                    friend = friend.substring(indexOfBrace+1+1,friend.length()); //another +1 for blank space
+                }
+                if (friend.equals(fromUser)){
+                    String finalFromUser1 = fromUser;
+                    int finalIndex = i;
+                    Platform.runLater(()->listViewFriendList.getItems().set(finalIndex,"[+"+friendList.get(finalFromUser1)+"] "+ finalFromUser1));
+                }
+            }
         }
 
     }
@@ -123,6 +139,32 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
     private void recieveFriendList(Message message) {
+        ArrayList<String> friendListFromDatabse= new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
+
+        if (friendList != null) {
+            for (String friend : friendListFromDatabse) {
+                if (!friendList.containsKey(friend) && !friend.equals("")) {
+                    friendList.put(friend, 0);
+                    messageList.put(friend, null);
+                }
+            }
+        }
+        else{
+            friendList= new HashMap<>();
+            messageList=new HashMap<>();
+            for (String friend : friendListFromDatabse) {
+                if (!friend.equals("")) {
+                    friendList.put(friend, 0);
+                    messageList.put(friend, null);
+                }
+            }
+        }
+
+        synchronized (GUIThread) {
+            processedRequest=true;
+            GUIThread.notify();
+        }
+        /*
         friendList = new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
         messageList=new HashMap<>();
         for( String friend: friendList){
@@ -132,7 +174,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         synchronized (GUIThread) {
             processedRequest=true;
             GUIThread.notify();
-        }
+        }*/
     }
 
     private void signUp(Message message) {
@@ -175,7 +217,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         return addedFriend;
     }
 
-    public ArrayList<String> getFriendList() {
+    public HashMap<String,Integer> getFriendList() {
         return friendList;
     }
 

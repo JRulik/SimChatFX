@@ -16,7 +16,7 @@ public class DatabaseMaster extends Database{
     public void databaseInit() throws SQLException {
         connection.prepareStatement("CREATE DATABASE IF NOT EXISTS "+nameOfDatabase).execute();
         connection = DriverManager.getConnection(url+"/"+nameOfDatabase,user,password);
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS users (username VARCHAR(50) not null" +
+        connection.prepareStatement("CREATE TABLE IF NOT EXISTS users (username VARCHAR(50) not null UNIQUE" +
                 ", password VARBINARY(512) not null" +
                 ", salt VARBINARY(16) not null"+
                 ", PRIMARY KEY(username))").execute(); //ID must be set as a kay, when AUTO_INCREMENT (dont know why ->otherwise exception)
@@ -37,7 +37,6 @@ public class DatabaseMaster extends Database{
     }
 
     public void fillTestUsers() throws SQLException {
-        //TODO After hashing passwords this will not work!
         addUser("asdasd","asdasd");
         addUser("qweqwe","qweqwe");
         addUser("werwer","werwer");

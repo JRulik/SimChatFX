@@ -62,13 +62,15 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         friendlistRefresh();
         listViewFriendList.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends String> observableValue, String s, String t1)-> {
-                  selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
-                  labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
-                  labelSelectedFriend.setText("  "+selectedFriend);
-                  Platform.runLater(()-> {
-                      textAreaSend.requestFocus();
-                      messageWindowRefresh();
-                  });
+                    if ((s == null  || !s.equals(t1))&& t1!=null) {
+                        selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
+                        labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
+                        labelSelectedFriend.setText("  " + selectedFriend);
+                        Platform.runLater(() -> {
+                            textAreaSend.requestFocus();
+                            messageWindowRefresh();
+                        });
+                    }
               });
         textAreaSend.setOnKeyPressed(keyEvent->{
             if (keyEvent.getCode()== KeyCode.ENTER){
@@ -110,6 +112,41 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         stage.showAndWait();
         serverHandler.setGUIThread(this);   //put back this as GUI thread in for server (for next lisrefresh)
         friendlistRefresh();
+    }
+
+    protected void friendlistRefresh() {
+        String selectedFreindLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
+        listViewFriendList.getItems().clear();
+        //if frienlist is not inicialized or inicialized with empty string (user with no friends) ask server (again)
+        if (serverHandler.getFriendList()==null || serverHandler.getFriendList().get(0).equals("")) {
+            Message message = new Message(MessageType.RETURN_FRIENDLIST);
+            serverHandler.setProcessedRequest(false);
+            serverHandler.sendMessage(message);
+            serverHandler.setGUIThread(this);
+            //wait till process is not serviced by serverHandler
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
+                        alert.showAndWait();
+                        serverHandler.closeEverything();
+                        System.out.println("[Error] -Thread interruption error!");
+                        ex.printStackTrace();
+                        System.exit(0);
+                    }
+                }
+            }
+        }
+        ArrayList<String> friends = serverHandler.getFriendList();
+        if (friends!=null  && !friends.get(0).equals("")){//check if there is only empty row in returned data from database
+            listViewFriendList.getItems().addAll(friends);
+        }
+        if(selectedFreindLocal!=null){//select friend who was selected before clearing listView
+            selectedFriend=selectedFreindLocal;
+            listViewFriendList.getSelectionModel().select(selectedFriend);
+        }
     }
 
     protected void messageWindowRefresh(){
@@ -194,41 +231,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
     }
 
-    protected void friendlistRefresh() {
-        String selectedFreindLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
-        listViewFriendList.getItems().clear();
-        //if frienlist is not inicialized or inicialized with empty string (user with no friends) ask server (again)
-        if (serverHandler.getFriendList()==null || serverHandler.getFriendList().get(0).equals("")) {
-            Message message = new Message(MessageType.RETURN_FRIENDLIST);
-            serverHandler.setProcessedRequest(false);
-            serverHandler.sendMessage(message);
-            serverHandler.setGUIThread(this);
-            //wait till process is not serviced by serverHandler
-            synchronized (this) {
-                while (!serverHandler.isProcessedRequest()) {
-                    try {
-                        this.wait();
-                    } catch (InterruptedException ex) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
-                        alert.showAndWait();
-                        serverHandler.closeEverything();
-                        System.out.println("[Error] -Thread interruption error!");
-                        ex.printStackTrace();
-                        System.exit(0);
-                    }
-                }
-            }
-        }
-        ArrayList<String> friends = serverHandler.getFriendList();
-        if (friends!=null  && !friends.get(0).equals("")){//check if there is only empty row in returned data from database
-            listViewFriendList.getItems().addAll(friends);
-        }
-        if(selectedFreindLocal!=null){//select friend who was selected before clearing listView
-            selectedFriend=selectedFreindLocal;
-            listViewFriendList.getSelectionModel().select(selectedFriend);
-            messageWindowRefresh();
-        }
-    }
+
 
     public String getUsername() {
         return username;

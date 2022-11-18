@@ -168,6 +168,9 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
         }
     }
 
+    public void putInMessageList(String user, ArrayList<Message> messages){
+        messageList.put(user,null);
+    }
     public boolean isAddedFriend() {
         return addedFriend;
     }

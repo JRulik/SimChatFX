@@ -60,6 +60,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
             }
             if(serverHandler.isAddedFriend()){
                 serverHandler.getFriendList().add(textFieldUserName.getText());
+                serverHandler.putInMessageList(textFieldUserName.getText(),null);
                 labelLogInfo.getStyleClass().add("labelLogInfoSuccess");
                 labelLogInfo.setText("User: \"" +textFieldUserName.getText()+"\" added to friendlist");
                 buttonAddFriend.setDisable(true);

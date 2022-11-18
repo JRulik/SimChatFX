@@ -71,7 +71,6 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
     }
 
     private boolean isCorrectInput() {
-        //TODO check if user is in friendlist already
 
         String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
         labelLogInfo.getStyleClass().add("labelLogInfoError");

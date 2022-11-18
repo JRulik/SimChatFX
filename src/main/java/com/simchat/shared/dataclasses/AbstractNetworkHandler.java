@@ -2,6 +2,7 @@ package com.simchat.shared.dataclasses;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 import static com.simchat.server.ServerMain.PORT;
 import static com.simchat.server.ServerMain.serverHost;
@@ -34,9 +35,12 @@ public abstract class AbstractNetworkHandler {
             if(socket != null){
                 socket.close();
             }
-        }catch(IOException e){
-            System.out.println("[Error] -Cannot close communication!");
+        }catch(SocketException e){
+            System.out.println("[Error] -Cannot close communication! - client socked already closed");
             e.printStackTrace();
-        }
+        }catch(IOException e){
+        System.out.println("[Error] -Cannot close communication!");
+        e.printStackTrace();
+    }
     }
 }

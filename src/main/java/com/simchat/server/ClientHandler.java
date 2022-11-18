@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringJoiner;
 
 public class ClientHandler extends AbstractNetworkHandler implements Runnable {
@@ -96,7 +97,10 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
             database.addFriend(fromUser,toUser);
         }
         //TODO sort clientHandlers and find by binarysearch
-        for (ClientHandler client: clientHandlers) {
+
+        Iterator<ClientHandler> iterator = clientHandlers.iterator();
+        while (iterator.hasNext()){
+            ClientHandler client = iterator.next();
             if (client.getClientUsername()!=null) {   //TODO fix that there are null clients in clientHandlers -> clean them
                 if (client.getClientUsername().equals(toUser) || client.getClientUsername().equals(fromUser)
                         && !client.equals(this)) {
@@ -104,7 +108,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         client.objectOutputStream.writeObject(message);
                     } catch (Exception e) {
                         client.closeEverything();
-                        client.removeClientHandler();
+                        iterator.remove();
                     }
                 }
             }
@@ -172,9 +176,6 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
         objectOutputStream.writeObject(returnMessage);
     }
 
-    public void removeClientHandler(){
-        clientHandlers.remove(this);
-    }
 
     public String getClientUsername() {
         return clientUsername;

@@ -83,10 +83,21 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             String finalFromUser = fromUser;
             Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
         }
-        if(!messageList.containsKey(fromUser)){//if fromUser not in messageList
-            messageList.put(fromUser, new ArrayList<Message>());
+        //TODO tady jsi to nekde pomrvil, problem s rozdilem lokalni a database pamaeti
+        if(!messageList.containsKey(fromUser)){//if fromUser messagelist is empty, fill from database
+            Message messageGetDatabaseMessages = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,
+                    clientUsername,fromUser);
+            //processedRequest = false; //TODO THIS IS THE PROBLEM
+            //objectOutputStream.writeObject(messageGetDatabaseMessages);
+            //while (processedRequest)
+
+        }else{
+            if( messageList.get(fromUser)==null){
+                messageList.put(fromUser, new ArrayList<Message>());
+            }
+            messageList.get(fromUser).add(message);
         }
-        messageList.get(fromUser).add(message);
+
 
         //Show message on screen if fromUser is selected in list
         if(listViewFriendList.getSelectionModel().getSelectedItem()!= null &&

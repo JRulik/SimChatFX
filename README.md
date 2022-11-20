@@ -21,7 +21,9 @@ moditification of project/IDE (JavaFX should by bundled), but I´m not sure. The
 "JavaFX" (should be bundled in IDE)
 If JavaFX is not working, here are another useful tutorial to make you working for your IDE:
 https://www.youtube.com/watch?v=Ope4icw6bVk&t=1s&ab_channel=BroCode    (for IntelliJ IDEA)
-https://www.youtube.com/watch?v=_7OM-cMYWbQ&t=312s&ab_channel=BroCode  (for Eclipse -> propably needed)
+https://www.youtube.com/watch?v=_7OM-cMYWbQ&t=312s&ab_channel=BroCode  (for Eclipse -> probably needed)
+
+ - In ItelliJ IDEA is needed to add "mysl-connector-j-8.0.31.jar" from lib folder of this project to module path (right click on project -> Open Module Settings -> click on "+" pictogram -> add "mysl-connector-j-8.0.31.jar" from lib folder
 
 Settings of application:
 - Settings of server and database is in file "ServerMain.java" and it´s theses:

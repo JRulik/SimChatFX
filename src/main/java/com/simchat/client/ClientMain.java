@@ -15,7 +15,7 @@ public class ClientMain extends Application {
     @Override
     public void start(Stage stage) {
         stage = stageCreator.createStage(stage, "LogIn-view.fxml","icon.png",
-                "styles.css","SimChatFX");
+                "styles.css","SimChatFX-Login");
         stage.setOnCloseRequest(event -> {Platform.exit();System.exit(0);});
         stage.show();
     }

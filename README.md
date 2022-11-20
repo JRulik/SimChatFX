@@ -15,11 +15,11 @@ Prerequisites:
 Simpliest way (and how this application was developed and tested):
   - Download XAMPP: https://www.apachefriends.org/download.html
   - Install and run. Then run module "Apache" and module "MySQL" (in this sequence).
-  - Project is created in IntelliJ IDEA, with newest version (2022.2.3) I think I had no problem with runing JavaFX without any 
-moditification of project/IDE (JavaFX should by bundled), but I´m not sure. There is possibility you need install plugins: 
-"JavaFX Runtime for Plugins"
-"JavaFX" (should be bundled in IDE)
-If JavaFX is not working, here are another useful tutorial to make you working for your IDE:
+ 
+- Project is created in IntelliJ IDEA, with newest version (2022.2.3) I think I had no problem with runing JavaFX without any 
+moditification of project/IDE (JavaFX should by bundled), but I´m not sure. There is possibility you need install plugins: "JavaFX Runtime for Plugins" and "JavaFX" (should be bundled in IDE)
+
+- If JavaFX is not working, here are another useful tutorial to make you working for your IDE:
 https://www.youtube.com/watch?v=Ope4icw6bVk&t=1s&ab_channel=BroCode    (for IntelliJ IDEA)
 https://www.youtube.com/watch?v=_7OM-cMYWbQ&t=312s&ab_channel=BroCode  (for Eclipse -> probably needed)
 

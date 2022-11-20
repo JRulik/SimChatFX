@@ -68,15 +68,14 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                     if ((s == null  || !s.equals(t1))&& t1!=null) {
                         selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
 
-                        //TODO change color of listcell when messages rising ->cellfactory or something
-                        //this is workaround cleanup notification
+                        //TODO change color of listcell when messages rising ->cellfactory or something ->see serverhandler
+                        //this is workaround (hotfix) cleanup notification
                         int indexOfSelectedFriend = listViewFriendList.getItems().indexOf(selectedFriend);
                         int indexOfBrace = selectedFriend.indexOf("]");
                         if(indexOfBrace!=-1){
                             selectedFriend = selectedFriend.substring(indexOfBrace+1+1,selectedFriend.length());//another +1 for blank space
                             listViewFriendList.getItems().set(indexOfSelectedFriend,selectedFriend);
                         }
-
                         labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
                         labelSelectedFriend.setText("  " + selectedFriend);
                         Platform.runLater(() -> {
@@ -89,7 +88,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         textAreaSend.setOnKeyPressed(keyEvent->{
             if (keyEvent.getCode()== KeyCode.ENTER){
                 //this doesn´t work because even bubbling, "\n" is catched faster then this handler gets called
-                keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
+                //keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
                 if (keyEvent.isShiftDown()) {
                     textAreaSend.appendText(System.getProperty("line.separator"));
                 } else {

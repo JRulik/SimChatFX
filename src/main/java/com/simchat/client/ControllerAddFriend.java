@@ -73,7 +73,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
 
     private boolean isCorrectInput() {
 
-        String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
+        String regexPattern = ".*\\W.*";// match nonword character
         labelLogInfo.getStyleClass().add("labelLogInfoError");
 
         if (serverHandler.getFriendList().containsKey(textFieldUserName.getText())){
@@ -82,7 +82,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
             return false;
         }
         if (Pattern.matches(regexPattern, textFieldUserName.getText())) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Username or password can be only from this character set: [a-zA-Z_0-9]", ButtonType.OK);
             alert.showAndWait();
             textFieldUserName.requestFocus();
             return false;

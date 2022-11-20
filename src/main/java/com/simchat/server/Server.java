@@ -11,13 +11,12 @@ public class Server {
 
     private DatabaseMaster databaseMaster;
     public Server(ServerSocket serverSocket) {
-
         try {
             databaseMaster = new DatabaseMaster();
             databaseMaster.databaseInit();
             //-------------------------------------------this code is for testing purposes
-            databaseMaster.resetDatabase();
-            databaseMaster.fillTestUsers();
+            //databaseMaster.resetDatabase();
+            //databaseMaster.fillTestUsers();
             //-------------------------------------------end of code for testing purposes
         } catch (SQLException e) {
             System.out.println("[Server Error] - Cannot open Database!");

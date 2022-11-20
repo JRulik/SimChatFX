@@ -84,7 +84,8 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             String finalFromUser = fromUser;
             friendList.put(fromUser,0);
             messageList.put(fromUser, null);
-            Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));
+            //Platform.runLater(()->listViewFriendList.getItems().add(finalFromUser));  //this dont show +1 incoming msg when new friend
+            Platform.runLater(()->listViewFriendList.getItems().add("[+1] "+ finalFromUser)); //this is hotfix for problem above
         }
         if(messageList.get(fromUser) !=null){
             messageList.get(fromUser).add(message);
@@ -105,14 +106,14 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             friendList.put(fromUser,friendList.get(fromUser)+1);
 
             //TODO change color of listcell when messages rising ->cellfactory or something
-            //this is workaround notification
+            //this is workaround (hotfix)  notification
             for (int i=0; i< listViewFriendList.getItems().size(); i++){
                 String friend = listViewFriendList.getItems().get(i);
                 int indexOfBrace = friend.indexOf("]");
                 if(indexOfBrace!=-1){
                     friend = friend.substring(indexOfBrace+1+1,friend.length()); //another +1 for blank space
                 }
-                if (friend.equals(fromUser)){
+                if (friend.equals(fromUser)&& friendList.get(fromUser)<10){
                     String finalFromUser1 = fromUser;
                     int finalIndex = i;
                     Platform.runLater(()->listViewFriendList.getItems().set(finalIndex,"[+"+friendList.get(finalFromUser1)+"] "+ finalFromUser1));
@@ -164,17 +165,6 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             processedRequest=true;
             GUIThread.notify();
         }
-        /*
-        friendList = new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
-        messageList=new HashMap<>();
-        for( String friend: friendList){
-            messageList.put(friend,null);
-        }
-
-        synchronized (GUIThread) {
-            processedRequest=true;
-            GUIThread.notify();
-        }*/
     }
 
     private void signUp(Message message) {

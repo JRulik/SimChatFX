@@ -41,10 +41,10 @@ public class ControllerLogIn implements Initializable {
 
     @FXML
     protected void loginButtonClick(ActionEvent e) {
-        String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
+        String regexPattern = ".*\\W.*";// match nonword character
         if( Pattern.matches(regexPattern, textFieldUserName.getText())
                 || Pattern.matches(regexPattern, passwordFieldPassword.getText())){
-            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Username or passqword can be only from this character set: [a-zA-Z_0-9]", ButtonType.OK);
             alert.showAndWait();
             textFieldUserName.requestFocus();
             return;

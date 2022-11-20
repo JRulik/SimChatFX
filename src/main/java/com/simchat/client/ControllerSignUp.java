@@ -66,11 +66,13 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
     }
 
     private boolean isCorrectInput() {
-        String regexPattern = ".*\s*[\u0020,./;'#=<>?:@~{}_+-].*\s*";
+        //TODO check this regex
+       // String regexPattern = ".*\s*[\u0020,./;'#=<>?:@{}_+-\\[\\]].*\s*"; // Some error with upper cases letters (also filtered)
+        String regexPattern = ".*\\W.*";// match nonword character
         labelLogInfo.getStyleClass().add("labelLogInfoError");
         if (Pattern.matches(regexPattern, textFieldUserName.getText())
                 || Pattern.matches(regexPattern, passwordFieldPassword.getText())) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "This characters  \",/;'#=<> ?:@~{}+-\" can´t be used in name or password", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Username or password can be only from this character set: [a-zA-Z_0-9]", ButtonType.OK);
             alert.showAndWait();
             textFieldUserName.requestFocus();
             return false;

@@ -14,8 +14,6 @@ public class ServerMain {
 
     public static void main(String[] args) {
 
-        //database.hashMapUserLoginAndPassword.put("honza","aznoh");
-
         ServerSocket serverSocket = null;
         try {
             serverSocket= new ServerSocket(PORT);

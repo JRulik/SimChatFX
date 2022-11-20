@@ -55,12 +55,14 @@ User which will be added to your friendlist has to be stored in database (create
 AddFriend window, you can chat to user by selecting him in menu on right side of main window. You can write and send message 
 by clicking on button "Send" or clicking on Enter on your keyboard.
 
-Some more info and flaws:
+Some more info and known bugs which needs to be fixed:
 - Password are hashed in database (SHA-512 with salt)
+- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be sotred in database and then retireved). Info about pending messages is also lost when new friend is added.
+- You can´t add yourself to your friendlist.
+
 - //TODO:
-  - fix bug that friend list is refreshed after adding new friend and then it clears info about pending messages from other users
   - Encrypt server-client communication and content of messages
   - Replace hotfix for regex for user inputs when logging/signup
   - Replace hotfix info about pending messages with color changing list value (with cellfactory)
-  - Add possibility to add yourself and write yourself messages
+
 

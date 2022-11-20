@@ -2,8 +2,7 @@ v.0.1
 --------------------------------------------------------------------------------------------------------------------------------- 
  SimChatFX 
 --------------------------------------------------------------------------------------------------------------------------------- 
-Simple multi client - server chat application build with JavaFX with SQL database
-
+Simple multi client - server chat application build with JavaFX and using SQL database. 
 
 ![image](https://user-images.githubusercontent.com/57802714/202924901-37bc4314-5806-4a0b-b8dc-35468073bff6.png)  ![image](https://user-images.githubusercontent.com/57802714/202924649-96419238-e972-4843-8a6e-5a30d90c6c68.png)
 
@@ -59,7 +58,7 @@ by clicking on button "Send" or clicking on Enter on your keyboard.
 
 Some more info and known bugs which needs to be fixed:
 - Password are hashed in database (SHA-512 with salt)
-- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added.
+- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed)
 - You can´t add yourself to your friendlist.
 
 - //TODO:

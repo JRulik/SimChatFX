@@ -47,7 +47,8 @@ For your purpose, you can uncomment them and use it (see "databaseMaster.java" t
 To run application:
 - Application has not been built to standalone application/installation in this repository yet.
 To run application in IDE, firstly check that Apache and MySQL module of XAMPP is running. Then run "ServerMain.java" which 
-runs server side and initialize database. Then you can run "ClientMain.java", which run GUI for individuals clients.
+runs server side and initialize database. Then you can run "ClientMain.java", which run GUI for individuals clients. You can run more clients at once and
+chat between each other.
 
 Application control:
 - Then you can create user by clicking on button "Sign Up". After creating user, exit SignUp window and you can login with this user 

@@ -156,7 +156,7 @@ public class Database {
             from = String.valueOf(resultSet.getString(2));
             to=String.valueOf(resultSet.getString(3));
             message = String.valueOf(resultSet.getString(5));
-            messages.add(new Message(MessageType.STANDART_MESSAGE, from, to,dateTime, message));
+            messages.add(new Message(MessageType.STANDARD_MESSAGE, from, to,dateTime, message));
         }
         return messages;
     }

@@ -94,7 +94,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                     case SIGNUP_MESSAGE: signUp(message); break;
                     case ADD_FRIEND: addFriend(message); break;
                     case RETURN_FRIENDLIST: receiveFriendList(message); break;
-                    case STANDART_MESSAGE: receiveMessage(message); break;
+                    case STANDARD_MESSAGE: receiveMessage(message); break;
                     case RETURN_MESSAGES_BETWEEN_USERS: receiveMessagesBetweenUsers(message); break;
                     default:
                 }
@@ -259,7 +259,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
     /**
-     * Send message given from GUI to server. If its standart message (messages between users) store it locally too
+     * Send message given from GUI to server. If its standard message (messages between users) store it locally too
      */
     protected void sendMessage(Message message)  {
         try {
@@ -272,7 +272,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
             e.printStackTrace();
             System.exit(0);
         }
-        if(message.getMessageType()==MessageType.STANDART_MESSAGE){//save message to local messages
+        if(message.getMessageType()==MessageType.STANDARD_MESSAGE){//save message to local messages
             messageList.get(message.getToUser()).add(message);
         }
     }

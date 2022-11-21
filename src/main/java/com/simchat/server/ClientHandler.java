@@ -6,7 +6,6 @@ import com.simchat.shared.dataclasses.MessageType;
 
 import java.io.*;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class ClientHandler extends AbstractNetworkHandler implements Runnable {
                         case SIGNUP_MESSAGE: signUp(message); break;
                         case ADD_FRIEND: addFriend(message); break;
                         case RETURN_FRIENDLIST: returnFriendList(message); break;
-                        case STANDART_MESSAGE: recieveAndSendMessage(message); break;
+                        case STANDARD_MESSAGE: recieveAndSendMessage(message); break;
                         case RETURN_MESSAGES_BETWEEN_USERS: sendMessagesBetweenUsers(message);break;
                     }
                 }

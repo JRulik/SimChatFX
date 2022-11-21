@@ -146,7 +146,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         String messageToSend =textAreaSend.getText();
         if (!messageToSend.isEmpty()) {
             LocalDateTime timeStamp = LocalDateTime.now();
-            Message message = new Message(MessageType.STANDART_MESSAGE, username,
+            Message message = new Message(MessageType.STANDARD_MESSAGE, username,
                     selectedFriend, timeStamp, messageToSend);
             showSendMessage(messageToSend,timeStamp);
             serverHandler.sendMessage(message);

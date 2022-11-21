@@ -17,49 +17,82 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import static com.simchat.client.ClientMain.serverHandler;
 import static com.simchat.client.ClientMain.stageCreator;
 
+
+/**
+ * Controller of window "Main window". Have receive vbox with scroll pane for received messages, text area for
+ * user input (message to send), two buttons ("AddFriend" and "Send") and listview with friendlist. Controls are
+ * defined in "Main-view.fxml".
+ */
 public class ControllerUserWindow extends AbstractNetworkHandler implements Initializable {
+    /**
+     * JavaFX controls, defined in "LogIn-view.fxml", which are shown on stage. Some of their
+     * attributes, as listeners, are also defined in "Main-view.fxml".
+     */
     @FXML
     private TextArea textAreaSend;
     @FXML
-    private VBox vBoxRecieve;
+    private VBox vBoxReceive;
     @FXML
-    private ScrollPane scrollPaneRecieve;
+    private ScrollPane scrollPaneReceive;
     @FXML
     private ListView<String> listViewFriendList;
     @FXML
     private Label labelSelectedFriend;
     @FXML
     private Label labelUsername;
+
+    /**
+     * Logged user. Obtained from severHandler
+     */
     private String username;
+
+    /**
+     * user selected in list view (friend list) which messages are shown in vbox (receive window) and with which
+     * can user now (after selecting) text.
+     */
     private String selectedFriend;
-    private LocalDateTime lastRecieveMessageTimeStamp;
+
+    /**
+     * Time stamp of last receive message shown in vbox (receive window). Used for writing time of message in GUI if
+     * time from last (this time stamp) and new shown is at least >1 min.
+     */
+    private LocalDateTime lastReceiveMessageTimeStamp;
+
+    /**
+     * Time stamp of last send message shown in vbox (receive window). Used for writing time of message in GUI if
+     * time from last (this time stamp) and new shown is at least >1 min.
+     */
     private LocalDateTime lastSendMessageTimeStamp;
+
+    /**
+     * Initialize method called before stage is shown. Set serverHandler gui variable to this to
+     * further manipulation with server-client communication (in synchronized part). Add listeners to GUI controls
+     * which could not be set in SceneBuilder. Parameters are defined in Initializable interface
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         serverHandler.setGUIThread(this);
         serverHandler.setListViewFriendList(listViewFriendList);
-        serverHandler.setvBoxRecieve(vBoxRecieve);
+        serverHandler.setvBoxRecieve(vBoxReceive);
         setUsername(serverHandler.getClientUsername());
 
-        vBoxRecieve.heightProperty().addListener(
+        vBoxReceive.heightProperty().addListener(
                 (ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) ->{
-                scrollPaneRecieve.layout();
-                scrollPaneRecieve.setVvalue((Double) newValue);
+                scrollPaneReceive.layout();
+                scrollPaneReceive.setVvalue((Double) newValue);
         });
 
         friendlistRefresh();
@@ -69,13 +102,14 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                         selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
 
                         //TODO change color of listcell when messages rising ->cellfactory or something ->see serverhandler
-                        //this is workaround (hotfix) cleanup notification
+                        //--------this is workaround (hotfix) cleanup notification
                         int indexOfSelectedFriend = listViewFriendList.getItems().indexOf(selectedFriend);
                         int indexOfBrace = selectedFriend.indexOf("]");
                         if(indexOfBrace!=-1){
                             selectedFriend = selectedFriend.substring(indexOfBrace+1+1,selectedFriend.length());//another +1 for blank space
                             listViewFriendList.getItems().set(indexOfSelectedFriend,selectedFriend);
                         }
+                        //---------end of workaround
                         labelSelectedFriend.getStyleClass().add("labelSelectedFriend");
                         labelSelectedFriend.setText("  " + selectedFriend);
                         Platform.runLater(() -> {
@@ -87,7 +121,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
 
         textAreaSend.setOnKeyPressed(keyEvent->{
             if (keyEvent.getCode()== KeyCode.ENTER){
-                //this doesn´t work because even bubbling, "\n" is catched faster then this handler gets called
+                //this doesn´t work because even bubbling, "\n" is catched faster than this handler gets called
                 //keyEvent.consume(); // otherwise a new line will be added to the textArea after the sendFunction() call
                 if (keyEvent.isShiftDown()) {
                     textAreaSend.appendText(System.getProperty("line.separator"));
@@ -97,9 +131,13 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                 }
             }
         });
+    }
 
-          }
-
+    /**
+     * Method bounded with control "Button buttonSend" called when button is pressed or when ENTER is pressed in textarea
+     * (user input). Check text in textarea if isn´t blank and if not, send via serverHandler to server.
+     * @param e ActionEvent which invoke this method
+     */
     @FXML
     protected void butttonSendAction(ActionEvent e) {
         if(selectedFriend==null){
@@ -117,20 +155,31 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         }
     }
 
+    /**
+     * Method bounded with control "Button buttonAddFriend" called when button is pressed. Opens new GUI window
+     * for adding user as friend and forwards control to ControllerAddFriend. Waits for this new window to close.
+     * Refresh friendlist after close.
+     * @param e ActionEvent which invoke this method
+     */
     @FXML
     protected void buttonAddFriendAction(ActionEvent e)  {
         Stage stage = stageCreator.createStage("AddFriend-view.fxml","icon.png","styles.css"
                 ,"SimChatFX - Add Friend");
-        stage.initModality(Modality.APPLICATION_MODAL);;
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
         serverHandler.setGUIThread(this);   //put back this as GUI thread in for server (for next lisrefresh)
         friendlistRefresh();
     }
 
+    /**
+     * Method to refresh friendlist (list view on right side of GUI). Temporarily store current selected friend in friend list.
+     * Use serverHandler local friendlist (if not null, otherwise ask server for friendlist)(which could be updated)
+     * and use it to map friends to GUI friendlist.
+     */
     protected void friendlistRefresh() {
-        String selectedFreindLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
+        String selectedFriendLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
         listViewFriendList.getItems().clear();
-        //if frienlist is not inicialized or inicialized with empty string (user with no friends) ask server (again)
+        //if frienlist is not initialized or initialized with empty string (user with no friends) ask server (again)
         if (serverHandler.getFriendList()==null) {
             Message message = new Message(MessageType.RETURN_FRIENDLIST);
             serverHandler.setProcessedRequest(false);
@@ -156,14 +205,15 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         if (friends!=null){//check if there is only empty row in returned data from database
             listViewFriendList.getItems().addAll(friends.keySet());
         }
-        if(selectedFreindLocal!=null){//select friend who was selected before clearing listView
-            selectedFriend=selectedFreindLocal;
+        if(selectedFriendLocal!=null){//select friend who was selected before clearing listView
+            selectedFriend=selectedFriendLocal;
             listViewFriendList.getSelectionModel().select(selectedFriend);
         }
     }
 
+
     protected void messageWindowRefresh(){
-        vBoxRecieve.getChildren().clear();
+        vBoxReceive.getChildren().clear();
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)== null) { //request messages from server if no local memmory
             Message message = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,this.username,selectedFriend);
             serverHandler.setProcessedRequest(false);
@@ -187,14 +237,14 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         }
         //show messages on massageWindow
         lastSendMessageTimeStamp = null;
-        lastRecieveMessageTimeStamp = null;
+        lastReceiveMessageTimeStamp = null;
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
             serverHandler.getFriendList().put(selectedFriend,0);
             for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
                 if (msg.getFromUser().equals(this.username)) {
                     showSendMessage(msg.getMessage(),msg.getCreatedTime());
                 } else {
-                    showRecievedMessage(msg.getMessage(),msg.getCreatedTime());
+                    showReceivedMessage(msg.getMessage(),msg.getCreatedTime());
                 }
             }
         }
@@ -208,7 +258,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         TextFlow textFlow = new TextFlow(text);
         textFlow.getStyleClass().add("textflow_timeStamp");
         hBox.getChildren().add(textFlow);
-        Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+        Platform.runLater(() -> vBoxReceive.getChildren().add(hBox));
     }
 
     public void showSendMessage(String messageSend, LocalDateTime messageTime){
@@ -225,24 +275,24 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         TextFlow textFlow = new TextFlow(text);
         textFlow.getStyleClass().add("textflow_send");
         hBox.getChildren().add(textFlow);
-        Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+        Platform.runLater(() -> vBoxReceive.getChildren().add(hBox));
     }
 
-    public void showRecievedMessage(String messageRecieved, LocalDateTime messageTime){
-        if (lastRecieveMessageTimeStamp==null ||
-                Duration.between(lastRecieveMessageTimeStamp,messageTime).toMinutes()>=1){
-            lastRecieveMessageTimeStamp = messageTime;
-            showTimeStampBetweenMessages(Pos.CENTER_LEFT,lastRecieveMessageTimeStamp);
+    public void showReceivedMessage(String messageReceived, LocalDateTime messageTime){
+        if (lastReceiveMessageTimeStamp ==null ||
+                Duration.between(lastReceiveMessageTimeStamp,messageTime).toMinutes()>=1){
+            lastReceiveMessageTimeStamp = messageTime;
+            showTimeStampBetweenMessages(Pos.CENTER_LEFT, lastReceiveMessageTimeStamp);
         }
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.getStyleClass().add("hbox_recieve");
-        Text text = new Text(messageRecieved);
+        hBox.getStyleClass().add("hbox_receive");
+        Text text = new Text(messageReceived);
         text.setId("text_font_color_white");
         TextFlow textFlow = new TextFlow(text);
-        textFlow.getStyleClass().add("textflow_recieve");
+        textFlow.getStyleClass().add("textflow_receive");
         hBox.getChildren().add(textFlow);
-        Platform.runLater(() -> vBoxRecieve.getChildren().add(hBox));
+        Platform.runLater(() -> vBoxReceive.getChildren().add(hBox));
     }
 
 

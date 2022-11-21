@@ -6,15 +6,22 @@ import com.simchat.shared.dataclasses.MessageType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import static com.simchat.client.ClientMain.serverHandler;
 
+/**
+ * Controller of window "Add friend" with button for adding friend to friendlist. Controls are
+ * defined in "AddFriend-view.fxml".
+ */
 public class ControllerAddFriend extends AbstractNetworkHandler implements Initializable {
+
+    /**
+     * JavaFX controls, defined in "AddFriend-view.fxml", which are shown on stage. Some of their
+     * attributes, as listeners, are also deffined in "AddFriend-view.fxml".
+     */
     @FXML
     private Button buttonAddFriend;
     @FXML
@@ -22,7 +29,16 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
     @FXML
     private Label labelLogInfo;
 
+    /**
+     * username of currently logged user. Be obtained from serverHandler.
+     */
     private String username;
+
+    /**
+     * Initialize method called before stage is shown. Set serverHandler gui variable to this to
+     * further manipulation with server-client communication (in synchronized part). Parameters are
+     * defined in Initializable interface
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serverHandler.setGUIThread(this);
@@ -31,11 +47,19 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         setUsername(serverHandler.getClientUsername());
     }
 
+    /**
+     * set username value to current logged user from serverHandler
+     * @param username of user currently logged
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-
+    /**
+     * Method bounded with control "Button buttonAddFriend" called when button is pressed.
+     * Check user input from text fields, and if passed check, then via serverHandler sent message
+     * to server about new added friend. Then refresh GUI and inform user.
+     */
     @FXML
     protected void addFriendButtonClick()  {
 
@@ -44,7 +68,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
             serverHandler.setProcessedRequest(false);
             serverHandler.setGUIThread(this);
             serverHandler.sendMessage(message);
-            synchronized (this) {
+            synchronized (this) {//to be able to wake up from other thread
                 while (!serverHandler.isProcessedRequest()) {
                     try {
                         this.wait();
@@ -71,12 +95,17 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
         }
     }
 
+    /**
+     * Check user input from text field against required parameters. If user input matches parameters (is in correct form)
+     * return true.
+     * @return true if user input from text field matches all parameters
+     */
     private boolean isCorrectInput() {
 
-        String regexPattern = ".*\\W.*";// match nonword character
+        String regexPattern = ".*\\W.*";// match nonword character, only [a-zA-Z_0-9] can be used
         labelLogInfo.getStyleClass().add("labelLogInfoError");
 
-        if (serverHandler.getFriendList().containsKey(textFieldUserName.getText())){
+        if (serverHandler.getFriendList().containsKey(textFieldUserName.getText())){//if already is in friendlist
             labelLogInfo.setText("Username already in friendlist!");
             textFieldUserName.requestFocus();
             return false;

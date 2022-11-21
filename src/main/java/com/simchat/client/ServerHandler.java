@@ -15,9 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-
-import static com.simchat.client.ClientMain.serverHandler;
 
 public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     private String clientUsername;
@@ -99,7 +96,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
                 ((ControllerUserWindow) GUIThread).showSendMessage(messageRecieved,timeStamp);
             }
             else {
-                ((ControllerUserWindow) GUIThread).showRecievedMessage(messageRecieved,timeStamp);
+                ((ControllerUserWindow) GUIThread).showReceivedMessage(messageRecieved,timeStamp);
             }
         }
         else{

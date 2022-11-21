@@ -14,8 +14,16 @@ import java.util.regex.Pattern;
 
 import static com.simchat.client.ClientMain.serverHandler;
 
-
+/**
+ * Controller of window "SignUp". Have buttons for Sign up user and Log in user. Controls are
+ * defined in "SignUp-view.fxml".
+ */
 public class ControllerSignUp extends AbstractNetworkHandler implements Initializable {
+
+    /**
+     * JavaFX controls, defined in "SignUp-view.fxml", which are shown on stage. Some of their
+     * attributes, as listeners, are also deffined in "SignUp-view.fxml".
+     */
     @FXML
     private Button buttonSignUp;
     @FXML
@@ -23,15 +31,26 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
     @FXML
     private TextField passwordFieldPassword;
     @FXML
-    private TextField passwordFieldPassword2;
+    private TextField passwordFieldPasswordAgain;
     @FXML
     private Label labelLogInfo;
+
+    /**
+     * Initialize method called before stage is shown. Set serverHandler gui variable to this to
+     * further manipulation with server-client communication (in synchronized part). Parameters are
+     * defined in Initializable interface
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serverHandler.setGUIThread(this);
         labelLogInfo.setText("");
     }
 
+    /**
+     * Method bounded with control "Button buttonSingUp" called when button is pressed.  Check correctness of input from
+     * textfields and if correct send message with username and password via serverHandler to server. Then inform user
+     * (trough GUI), if user was created (depends on answer from server).
+     */
     @FXML
     protected void signUp() throws IOException {
         if (isCorrectInput()) {
@@ -40,7 +59,7 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
             serverHandler.setProcessedRequest(false);
             serverHandler.sendMessage(message);
 
-            synchronized (this) {
+            synchronized (this) {//to be able to wake up from other thread
                 while (!serverHandler.isProcessedRequest()) {
                     try {
                         this.wait();
@@ -65,6 +84,11 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
         }
     }
 
+    /**
+     * Check user input from text field against required parameters. If user input matches parameters (is in correct form)
+     * return true.
+     * @return true if user input from text field matches all parameters
+     */
     private boolean isCorrectInput() {
         //TODO check this regex
        // String regexPattern = ".*\s*[\u0020,./;'#=<>?:@{}_+-\\[\\]].*\s*"; // Some error with upper cases letters (also filtered)
@@ -87,7 +111,7 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
             passwordFieldPassword.requestFocus();
             return false;
         }
-        if (!passwordFieldPassword.getText().equals(passwordFieldPassword2.getText())) {
+        if (!passwordFieldPassword.getText().equals(passwordFieldPasswordAgain.getText())) {
             passwordFieldPassword.requestFocus();
             labelLogInfo.setText("Passwords don´t match!");
             return false;

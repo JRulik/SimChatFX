@@ -12,7 +12,7 @@
    <children>
       <TextField fx:id="textFieldUserName" layoutX="119.0" layoutY="33.0" prefHeight="25.0" prefWidth="157.0" />
       <PasswordField fx:id="passwordFieldPassword" layoutX="119.0" layoutY="86.0" prefWidth="157.0" />
-      <PasswordField fx:id="passwordFieldPassword2" layoutX="119.0" layoutY="137.0" prefWidth="157.0" />
+      <PasswordField fx:id="passwordFieldPasswordAgain" layoutX="119.0" layoutY="137.0" prefWidth="157.0" />
       <Button fx:id="buttonSignUp" layoutX="189.0" layoutY="195.0" mnemonicParsing="false" onAction="#signUp" prefHeight="39.0" prefWidth="87.0" text="Sign Up" />
       <Circle fill="DODGERBLUE" layoutX="26.0" layoutY="52.0" radius="85.0" stroke="BLACK" strokeType="INSIDE" />
       <Label layoutX="119.0" layoutY="14.0" text="User Name:" />

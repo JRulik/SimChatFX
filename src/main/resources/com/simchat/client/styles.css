@@ -98,7 +98,7 @@ VBox {
        -fx-fill: white;
 }
 
-.textflow_recieve{
+.textflow_receive{
      -fx-font-size: 14;
     -fx-padding: 5,5,5,5;/*top,right,bottom,left*//*<-nejak nefunguje*/
     -fx-background-color: #18727E;
@@ -109,7 +109,7 @@ VBox {
         -fx-padding: 2.0 4.0 0.0 50.0;/*top,right,bottom,left*/
 }
 
-.hbox_recieve{
+.hbox_receive{
         -fx-padding: 2.0 50.0 0.0 4.0;/*top,right,bottom,left*/
 }
 

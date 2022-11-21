@@ -59,7 +59,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     private String username;
 
     /**
-     * user selected in list view (friend list) which messages are shown in vbox (receive window) and with which
+     * User selected in list view (friend list) which messages are shown in vbox (receive window) and with which
      * can user now (after selecting) text.
      */
     private String selectedFriend;
@@ -86,7 +86,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
 
         serverHandler.setGUIThread(this);
         serverHandler.setListViewFriendList(listViewFriendList);
-        serverHandler.setvBoxRecieve(vBoxReceive);
+        serverHandler.setvBoxReceive(vBoxReceive);
         setUsername(serverHandler.getClientUsername());
 
         vBoxReceive.heightProperty().addListener(
@@ -172,9 +172,8 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Method to refresh friendlist (list view on right side of GUI). Temporarily store current selected friend in friend list.
-     * Use serverHandler local friendlist (if not null, otherwise ask server for friendlist)(which could be updated)
-     * and use it to map friends to GUI friendlist.
+     * Refresh friendlist (list view on right side of GUI). Use serverHandler local friendlist
+     * (if was initialized, otherwise ask server for friendlist) and use it to map friend to GUI friendlist.
      */
     protected void friendlistRefresh() {
         String selectedFriendLocal =  listViewFriendList.getSelectionModel().getSelectedItem();
@@ -211,7 +210,11 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         }
     }
 
-
+    /**
+     * Refresh window (vbox) with messages in according to with user is selected in friendlist (listview) in GUI. Refresh
+     * is done from local memory (serverHandler). If no messages between this user and selected user in local memmory
+     * ,then it´s asked server for messages and messages are got from database
+     */
     protected void messageWindowRefresh(){
         vBoxReceive.getChildren().clear();
         if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)== null) { //request messages from server if no local memmory
@@ -250,6 +253,9 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         }
     }
 
+    /**
+     * Show time information about send/received message in message window (vbox)
+     */
     public void showTimeStampBetweenMessages(Pos position,LocalDateTime timeStamp){
         HBox hBox = new HBox();
         hBox.setAlignment(position);
@@ -261,6 +267,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         Platform.runLater(() -> vBoxReceive.getChildren().add(hBox));
     }
 
+    /**
+     * Show send message in message window (vbox). If duration between last showen send message and this one, which
+     * is going to be shown, is more than 1 minute, show time information about message before show this message
+     */
     public void showSendMessage(String messageSend, LocalDateTime messageTime){
         if (lastSendMessageTimeStamp==null ||
                 Duration.between(lastSendMessageTimeStamp.truncatedTo(ChronoUnit.MINUTES),
@@ -278,6 +288,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         Platform.runLater(() -> vBoxReceive.getChildren().add(hBox));
     }
 
+    /**
+     * Show received message in message window (vbox). If duration between last showen received message and this one, which
+     * is going to be shown, is more than 1 minute, show time information about message before show this message
+     */
     public void showReceivedMessage(String messageReceived, LocalDateTime messageTime){
         if (lastReceiveMessageTimeStamp ==null ||
                 Duration.between(lastReceiveMessageTimeStamp,messageTime).toMinutes()>=1){
@@ -296,16 +310,24 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
 
-
+    /**
+     * @return currently logged client username
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Set this user username and show it in label above message window in GUI
+     */
     public void setUsername(String username) {
         this.username = username;
         setLabelUsername(username);
     }
 
+    /**
+     * Set label username in label above message window in GUI
+     */
     public void setLabelUsername(String username) {
         labelUsername.setText(username+"  ");
     }

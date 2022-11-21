@@ -12,11 +12,11 @@ Simple multi client - server chat application build with JavaFX and using SQL da
 Prerequisites:
 - It´s needed to have some web server, which will communicate  with client and some database server (RDBMS), where database is stored.
 Simplest way (and how this application was developed and tested):
-  - Download XAMPP: https://www.apachefriends.org/download.html
+  - Download XAMPP: https://www.apachefriends.org/download.html .
   - Install and run. Then run module "Apache" and module "MySQL" (in this sequence).
  
 - Project is created in IntelliJ IDEA, with the newest version (2022.2.3) I think I had no problem with running JavaFX without any 
-modification of project/IDE (JavaFX should by bundled), but I´m not sure. There is possibility you need install plugins: "JavaFX Runtime for Plugins" and "JavaFX" (should be bundled in IDE)
+modification of project/IDE (JavaFX should by bundled), but I´m not sure. There is possibility you need install plugins: "JavaFX Runtime for Plugins" and "JavaFX" (should be bundled in IDE).
 
 - If JavaFX is not working, here are another useful tutorial to make you working for your IDE:
 https://www.youtube.com/watch?v=Ope4icw6bVk&t=1s&ab_channel=BroCode    (for IntelliJ IDEA)
@@ -61,19 +61,19 @@ Database:
 - Database is called simchatx_database.
 - Users and their passwords are stored in "user" table
 - Users friendlist and messages is stored in table "nameofuser_friendlist" and "nameofuser_messages" (so for every user there is row in "users" table and 2 additional
-tables
+tables).
 
 Some more info and known bugs which needs to be fixed:
 - There is no option to delete messages, users, or friend from friendlist etc.
-- Password are hashed in database (SHA-512 with salt)
-- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed)
+- Password are hashed in database (SHA-512 with salt).
+- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed).
 - You can´t add yourself to your friendlist.
 
 - //TODO:
-  - Make robustnes user input, e.g. depending on the database parameters (e.g. condition on length of username and password)
-  - Sorting of friends in GUI
-  - Encrypt server-client communication and content of messages
-  - Replace hotfix for regex for user inputs when logging/signup
-  - Replace hotfix info about pending messages with color changing list value (with cellfactory)
+  - Make robustnes user input, e.g. depending on the database parameters (e.g. condition on length of username and password).
+  - Sorting of friends in GUI.
+  - Encrypt server-client communication and content of messages.
+  - Replace hotfix for regex for user inputs when logging/signup.
+  - Replace hotfix info about pending messages with color changing list value (with cellfactory).
 
 

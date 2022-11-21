@@ -5,11 +5,26 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 
+/**
+ * Listening part of server. Listen on server socket and when new incomming connection is there
+ * runs ClientHandler in separate thread to handle new client.
+ */
 public class Server {
 
+    /**
+     * Server socket on which is this server listening.
+     */
     protected ServerSocket serverSocket;
 
+    /**
+     * Used to manipulate with database on "higher" level (possibility to create/drop database).
+     */
     private DatabaseMaster databaseMaster;
+
+    /**
+     * Initialise database and set socket.
+     * @param serverSocket server socket to be set in this class to listen on.
+     */
     public Server(ServerSocket serverSocket) {
         try {
             databaseMaster = new DatabaseMaster();
@@ -28,6 +43,11 @@ public class Server {
         this.serverSocket = serverSocket;
     }
 
+    /**
+     * Main method of thread, started in Server.java. Listening on server socket, when new connection
+     * is established, pass it to new thread ClientHandler to handle this client and then listen on
+     * socket again.
+     */
     public void start() {
         int threadID =1;
         try{
@@ -46,6 +66,9 @@ public class Server {
         }
     }
 
+    /**
+     * close server socket
+     */
     public void closeServerSocket(){
         try {
             if (serverSocket != null){

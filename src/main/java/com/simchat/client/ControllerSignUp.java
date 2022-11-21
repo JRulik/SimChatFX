@@ -38,7 +38,7 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
     /**
      * Initialize method called before stage is shown. Set serverHandler gui variable to this to
      * further manipulation with server-client communication (in synchronized part). Parameters are
-     * defined in Initializable interface
+     * defined in Initializable interface.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,7 +87,7 @@ public class ControllerSignUp extends AbstractNetworkHandler implements Initiali
     /**
      * Check user input from text field against required parameters. If user input matches parameters (is in correct form)
      * return true.
-     * @return true if user input from text field matches all parameters
+     * @return true if user input from text field matches all parameters.
      */
     private boolean isCorrectInput() {
         //TODO check this regex

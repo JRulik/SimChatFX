@@ -12,26 +12,27 @@ import static com.simchat.server.ServerMain.serverHost;
  * communication.
  */
 public abstract class AbstractNetworkHandler {
+
     /**
-     * Communication socket from where streams are get
+     * Communication socket from where streams are get.
      */
     protected Socket socket;
 
     /**
-     * Input stream to read object (Message) from socket
+     * Input stream to read object (Message) from socket.
      */
     protected ObjectInputStream objectInputStream;
 
     /**
-     * Output stream to write object (Message) to socket
+     * Output stream to write object (Message) to socket.
      */
     protected ObjectOutputStream objectOutputStream;
 
 
     /**
-     * Initialize class socket to param socket. Initialize output/input stream
-     * @param socket socket to store as class variable
-     * @throws IOException when stream could not be initialized from socket
+     * Initialize class socket to param socket. Initialize output/input stream.
+     * @param socket socket to store as class variable.
+     * @throws IOException when stream could not be initialized from socket.
      */
     protected void initSocketAndStreams(Socket socket) throws IOException {
         this.socket = socket;
@@ -41,8 +42,8 @@ public abstract class AbstractNetworkHandler {
 
     /**
      * Initialize new socket and store it to class variable. Used to initialize server socket (from Server.java).
-     * Initialize output/input stream
-     * @throws IOException when stream could not be initialized from socket
+     * Initialize output/input stream.
+     * @throws IOException when stream could not be initialized from socket.
      */
     protected void initSocketAndStreams() throws IOException {
         socket = new Socket(serverHost, PORT);
@@ -51,7 +52,7 @@ public abstract class AbstractNetworkHandler {
     }
 
     /**
-     * Close open stream or socket
+     * Close open stream or socket.
      */
     public void closeEverything(){
         try{

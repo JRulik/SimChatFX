@@ -36,6 +36,7 @@ import static com.simchat.client.ClientMain.stageCreator;
  * defined in "Main-view.fxml".
  */
 public class ControllerUserWindow extends AbstractNetworkHandler implements Initializable {
+
     /**
      * JavaFX controls, defined in "LogIn-view.fxml", which are shown on stage. Some of their
      * attributes, as listeners, are also defined in "Main-view.fxml".
@@ -79,7 +80,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     /**
      * Initialize method called before stage is shown. Set serverHandler gui variable to this to
      * further manipulation with server-client communication (in synchronized part). Add listeners to GUI controls
-     * which could not be set in SceneBuilder. Parameters are defined in Initializable interface
+     * which could not be set in SceneBuilder. Parameters are defined in Initializable interface.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -136,7 +137,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     /**
      * Method bounded with control "Button buttonSend" called when button is pressed or when ENTER is pressed in textarea
      * (user input). Check text in textarea if isn´t blank and if not, send via serverHandler to server.
-     * @param e ActionEvent which invoke this method
+     * @param e ActionEvent which invoke this method.
      */
     @FXML
     protected void butttonSendAction(ActionEvent e) {
@@ -159,7 +160,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
      * Method bounded with control "Button buttonAddFriend" called when button is pressed. Opens new GUI window
      * for adding user as friend and forwards control to ControllerAddFriend. Waits for this new window to close.
      * Refresh friendlist after close.
-     * @param e ActionEvent which invoke this method
+     * @param e ActionEvent which invoke this method.
      */
     @FXML
     protected void buttonAddFriendAction(ActionEvent e)  {
@@ -172,7 +173,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Refresh friendlist (list view on right side of GUI). Use serverHandler local friendlist
+     * Refresh friendlist (list view on right side of GUI). Use serverHandler local friendlist.
      * (if was initialized, otherwise ask server for friendlist) and use it to map friend to GUI friendlist.
      */
     protected void friendlistRefresh() {
@@ -213,7 +214,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     /**
      * Refresh window (vbox) with messages in according to with user is selected in friendlist (listview) in GUI. Refresh
      * is done from local memory (serverHandler). If no messages between this user and selected user in local memmory
-     * ,then it´s asked server for messages and messages are got from database
+     * ,then it´s asked server for messages and messages are got from database.
      */
     protected void messageWindowRefresh(){
         vBoxReceive.getChildren().clear();
@@ -254,7 +255,9 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Show time information about send/received message in message window (vbox)
+     * Show time information about send/received message in message window (vbox).
+     * @param position of Hbox in Vbox (message window) of time information, which will be shown in message window.
+     * @param timeStamp time which will be shown in message window.
      */
     public void showTimeStampBetweenMessages(Pos position,LocalDateTime timeStamp){
         HBox hBox = new HBox();
@@ -268,8 +271,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Show send message in message window (vbox). If duration between last showen send message and this one, which
-     * is going to be shown, is more than 1 minute, show time information about message before show this message
+     * Show send message in message window (vbox). If duration between last shown send message and this one, which
+     * is going to be shown, is more than 1 minute, show time information about message before show this message.
+     * @param messageSend send message which will be shown.
+     * @param messageTime time of message, which will be showm.
      */
     public void showSendMessage(String messageSend, LocalDateTime messageTime){
         if (lastSendMessageTimeStamp==null ||
@@ -289,8 +294,10 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Show received message in message window (vbox). If duration between last showen received message and this one, which
-     * is going to be shown, is more than 1 minute, show time information about message before show this message
+     * Show received message in message window (vbox). If duration between last shown received message and this one, which
+     * is going to be shown, is more than 1 minute, show time information about message before show this message.
+     * @param messageReceived received message which will be shown.
+     * @param messageTime time of message, which will be showm.
      */
     public void showReceivedMessage(String messageReceived, LocalDateTime messageTime){
         if (lastReceiveMessageTimeStamp ==null ||
@@ -311,14 +318,15 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
 
 
     /**
-     * @return currently logged client username
+     * @return currently logged client username.
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * Set this user username and show it in label above message window in GUI
+     * Set this user username and show it in label above message window in GUI.
+     * @param username which should be stored locally in class and shown in GUI.
      */
     public void setUsername(String username) {
         this.username = username;
@@ -326,7 +334,8 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
     }
 
     /**
-     * Set label username in label above message window in GUI
+     * Set label username in label above message window in GUI.
+     * @param username which should be stored shown in GUI.
      */
     public void setLabelUsername(String username) {
         labelUsername.setText(username+"  ");

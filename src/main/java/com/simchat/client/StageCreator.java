@@ -16,13 +16,13 @@ import java.io.IOException;
 public class StageCreator {
 
     /**
-     * Modify stage according to given parameters
-     * @param stage stage which will be modified and returned
-     * @param FxmlPath path (and name) to fxml file  from where JavaFX elements would be loaded
-     * @param iconPath path (and name) to image icon shown when stage (window) is running
-     * @param stylesPath path (and name) of styling classes for JavaFX elements
-     * @param title title of stage (window)
-     * @return modified stage given as parameter
+     * Modify stage according to given parameters.
+     * @param stage stage which will be modified and returned.
+     * @param FxmlPath path (and name) to fxml file  from where JavaFX elements would be loaded.
+     * @param iconPath path (and name) to image icon shown when stage (window) is running.
+     * @param stylesPath path (and name) of styling classes for JavaFX elements.
+     * @param title title of stage (window).
+     * @return modified stage given as parameter.
      */
     public Stage createStage(Stage stage, String FxmlPath, String iconPath, String stylesPath,String title)  {
         FXMLLoader fxmlLoader = new FXMLLoader(ClientMain.class.getResource(FxmlPath));
@@ -50,11 +50,11 @@ public class StageCreator {
 
     /**
      * Create new stage according to given parameters.
-     * @param FxmlPath path (and name) to fxml file  from where JavaFX elements would be loaded
-     * @param iconPath path (and name) to image icon shown when stage (window) is running
-     * @param stylesPath path (and name) of styling classes for JavaFX elements
-     * @param title title of stage (window)
-     * @return modified stage given as parameter
+     * @param FxmlPath path (and name) to fxml file  from where JavaFX elements would be loaded.
+     * @param iconPath path (and name) to image icon shown when stage (window) is running.
+     * @param stylesPath path (and name) of styling classes for JavaFX elements.
+     * @param title title of stage (window).
+     * @return modified stage given as parameter.
      */
     public Stage createStage(String FxmlPath, String iconPath, String stylesPath,String title) {
         Stage stage = new Stage();

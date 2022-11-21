@@ -37,7 +37,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     private ListView<String> listViewFriendList;
 
     /**
-     * GUI thread, which is invoking some of ServerHandler functionality and waiting for woke up from ServerHandler thread
+     * GUI thread, which is invoking some of ServerHandler functionality and waiting for woke up from ServerHandler thread.
      */
     private Object GUIThread;
 
@@ -51,7 +51,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Variables used as holder for response from server on specific request from GUI (log user, sign up user,
-     * add friend)
+     * add friend).
      */
     private boolean logged;
     private boolean signedUp;
@@ -65,12 +65,12 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Messages between this user and friends. Locally stored in RAM. Obtained from server if needed. Used in GUI for
-     * showing messages
+     * showing messages.
      */
     private HashMap<String,ArrayList<Message>> messageList;
 
     /**
-     * Init socket for communication. Set default values if logged client and his messagelist
+     * Init socket for communication. Set default values if logged client and his messagelist.
      */
     public ServerHandler() throws IOException {
         this.logged=false;
@@ -110,6 +110,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     /**
      * Receive messages between this user and some friend from server and store locally.
      * Wake up GUI thread waiting for response.
+     * @param message Received message from server.
      */
     private void receiveMessagesBetweenUsers(Message message) {
         messageList.put(message.getToUser(),message.getListOfMessages());
@@ -124,6 +125,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
      * Store data to hashmap messageList. Update GUI friendlist (if user not known or not selected now (so message
      * will not be shown in GUI message window (vbox) and it´s needed to inform in GUI, that new message from other user
      * was received)). Update GUI message window (vbox), if user who is this message from, is now selected in GUI.
+     * @param message Received message from server.
      */
     private void receiveMessage(Message message) throws IOException {
         String fromUser, toUser, messageRecieved;
@@ -187,14 +189,16 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
     /**
-     * Set GUI friendlist listview to local friendlist listview for further updating this GUI element in this class
+     * Set GUI friendlist listview to local friendlist listview for further updating this GUI element in this class.
+     * @param listViewFriendList GUI list with which will be manipulated later.
      */
     public void setListViewFriendList(ListView<String> listViewFriendList) {
         this.listViewFriendList = listViewFriendList;
     }
 
     /**
-     * Set response from server to AddFriend request and wake up waiting GUI thread
+     * Set response from server to AddFriend request and wake up waiting GUI thread.
+     * @param message Received message from server.
      */
     private void addFriend(Message message) {
         addedFriend = message.isServerResponse();
@@ -207,6 +211,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     /**
      * Receive friendlist of this user from server and store it locally. Check if something in friendlist.
      * Initialize messagelist. Wake up waiting GUI thread.
+     * @param message Received message from server.
      */
     private void receiveFriendList(Message message) {
         ArrayList<String> friendListFromDatabse= new ArrayList<String> (Arrays.asList(message.getMessage().split("\\n")));
@@ -238,6 +243,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Set response from server to SignUp user request and wake up waiting GUI thread
+     * @param message Received message from server
      */
     private void signUp(Message message) {
         signedUp=message.isServerResponse();
@@ -249,6 +255,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Set response from server to Login user request and wake up waiting GUI thread
+     * @param message Received message from server
      */
     private void logInClient(Message message) {
         logged=message.isServerResponse();
@@ -260,6 +267,7 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Send message given from GUI to server. If its standard message (messages between users) store it locally too
+     * @param message Received message from server
      */
     protected void sendMessage(Message message)  {
         try {
@@ -279,7 +287,10 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      * Put user in hashmap messagelist with "null" messages with this user
+     * @param messages
+     * @param user user who will be putted in local hashmap massagelist
      */
+    //TODO get rid of this rrayList<Message> messages, if not needed
     public void putInMessageList(String user, ArrayList<Message> messages){
         messageList.put(user,null);
     }
@@ -321,15 +332,17 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
     }
 
     /**
-     *  Set parametr about processed request. Set in GUI classes to false before some request, which sleeps GUI thread,
+     *  Set parameter about processed request. Set in GUI classes to false before some request, which sleeps GUI thread,
      *  is sent to server trough this class. Set in this class to true after receiving data from server.
+     * @param processedRequest set false before blocking communication to server from some Controller.
      */
     public void setProcessedRequest(boolean processedRequest) {
         this.processedRequest = processedRequest;
     }
 
     /**
-     *  Set GUI thread object locally, to know, which thread should be woken up after client-server request is processed
+     *  Set GUI thread object locally, to know, which thread should be woken up after client-server request is processed.
+     * @param GUIThread GUI thread which shuld be localy stored to be able to be woken up from this thread.
      */
     public void setGUIThread(Object GUIThread) {
         this.GUIThread = GUIThread;
@@ -337,13 +350,15 @@ public class ServerHandler extends AbstractNetworkHandler implements Runnable{
 
     /**
      *  Set logged client username.
+     * @param clientUsername client username.
      */
     public void setClientUsername(String clientUsername) {
        this.clientUsername= clientUsername;
     }
 
     /**
-     * @return messages between logged user (this user) and selected user (friend)
+     * @return messages between logged user (this user) and selected user (friend).
+     * @param selectedFriend which messages should be returned.
      */
     public ArrayList<Message> getLocalMessagesBetweenUsers(String selectedFriend) {
         return this.messageList.get(selectedFriend);

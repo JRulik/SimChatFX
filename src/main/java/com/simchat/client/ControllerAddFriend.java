@@ -48,8 +48,8 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
     }
 
     /**
-     * set username value to current logged user from serverHandler
-     * @param username of user currently logged
+     * set username value to current logged user from serverHandler.
+     * @param username of user currently logged.
      */
     public void setUsername(String username) {
         this.username = username;
@@ -98,7 +98,7 @@ public class ControllerAddFriend extends AbstractNetworkHandler implements Initi
     /**
      * Check user input from text field against required parameters. If user input matches parameters (is in correct form)
      * return true.
-     * @return true if user input from text field matches all parameters
+     * @return true if user input from text field matches all parameters.
      */
     private boolean isCorrectInput() {
 

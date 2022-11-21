@@ -23,6 +23,7 @@ import static com.simchat.client.ClientMain.stageCreator;
  * defined in "LogIn-view.fxml".
  */
 public class ControllerLogIn implements Initializable {
+
     /**
      * JavaFX controls, defined in "LogIn-view.fxml", which are shown on stage. Some of their
      * attributes, as listeners, are also defined in "LogIn-view.fxml".
@@ -41,7 +42,7 @@ public class ControllerLogIn implements Initializable {
     /**
      * Initialize method called before stage is shown. Set serverHandler gui variable to this to
      * further manipulation with server-client communication (in synchronized part). Parameters are
-     * defined in Initializable interface
+     * defined in Initializable interface.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,7 +59,7 @@ public class ControllerLogIn implements Initializable {
     /**
      * Method bounded with control "Button buttonSingUp" called when button is pressed. Opens new GUI window
      * for signuping user and forwards control to ControllerSignUp. Waits for this new window to close.
-     * @param e ActionEvent which invoke this method
+     * @param e ActionEvent which invoke this method.
      */
     @FXML
     protected void signUpButtonClick(ActionEvent e){

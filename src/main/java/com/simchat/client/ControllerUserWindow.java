@@ -99,7 +99,7 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         friendlistRefresh();
         listViewFriendList.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends String> observableValue, String s, String t1)-> {
-                    if ((s == null  || !s.equals(t1))&& t1!=null) {
+                    if ((s == null  || !s.equals(t1))&& t1!=null && selectedFriend != listViewFriendList.getSelectionModel().getSelectedItem()) {
                         selectedFriend = listViewFriendList.getSelectionModel().getSelectedItem();
 
                         //TODO change color of listcell when messages rising ->cellfactory or something ->see serverhandler
@@ -132,6 +132,49 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
                 }
             }
         });
+    }
+
+    /**
+     * Refresh window (vbox) with messages in according to with user is selected in friendlist (listview) in GUI. Refresh
+     * is done from local memory (serverHandler). If no messages between this user and selected user in local memmory
+     * ,then it´s asked server for messages and messages are got from database.
+     */
+    protected void messageWindowRefresh(){
+        vBoxReceive.getChildren().clear();
+        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)== null) { //request messages from server if no local memmory
+            Message message = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,this.username,selectedFriend);
+            serverHandler.setProcessedRequest(false);
+            serverHandler.setGUIThread(this);
+            serverHandler.sendMessage(message);
+            //wait till process is not serviced by serverHandler
+            synchronized (this) {
+                while (!serverHandler.isProcessedRequest()) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException ex) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
+                        alert.showAndWait();
+                        serverHandler.closeEverything();
+                        System.out.println("[Error] -Thread interruption error!");
+                        ex.printStackTrace();
+                        System.exit(0);
+                    }
+                }
+            }
+        }
+        //show messages on massageWindow
+        lastSendMessageTimeStamp = null;
+        lastReceiveMessageTimeStamp = null;
+        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
+            serverHandler.getFriendList().put(selectedFriend,0);
+            for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
+                if (msg.getFromUser().equals(this.username)) {
+                    showSendMessage(msg.getMessage(),msg.getCreatedTime());
+                } else {
+                    showReceivedMessage(msg.getMessage(),msg.getCreatedTime());
+                }
+            }
+        }
     }
 
     /**
@@ -208,49 +251,6 @@ public class ControllerUserWindow extends AbstractNetworkHandler implements Init
         if(selectedFriendLocal!=null){//select friend who was selected before clearing listView
             selectedFriend=selectedFriendLocal;
             listViewFriendList.getSelectionModel().select(selectedFriend);
-        }
-    }
-
-    /**
-     * Refresh window (vbox) with messages in according to with user is selected in friendlist (listview) in GUI. Refresh
-     * is done from local memory (serverHandler). If no messages between this user and selected user in local memmory
-     * ,then it´s asked server for messages and messages are got from database.
-     */
-    protected void messageWindowRefresh(){
-        vBoxReceive.getChildren().clear();
-        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)== null) { //request messages from server if no local memmory
-            Message message = new Message(MessageType.RETURN_MESSAGES_BETWEEN_USERS,this.username,selectedFriend);
-            serverHandler.setProcessedRequest(false);
-            serverHandler.setGUIThread(this);
-            serverHandler.sendMessage(message);
-            //wait till process is not serviced by serverHandler
-            synchronized (this) {
-                while (!serverHandler.isProcessedRequest()) {
-                    try {
-                        this.wait();
-                    } catch (InterruptedException ex) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR, "Thread interruption error!", ButtonType.OK);
-                        alert.showAndWait();
-                        serverHandler.closeEverything();
-                        System.out.println("[Error] -Thread interruption error!");
-                        ex.printStackTrace();
-                        System.exit(0);
-                    }
-                }
-            }
-        }
-        //show messages on massageWindow
-        lastSendMessageTimeStamp = null;
-        lastReceiveMessageTimeStamp = null;
-        if(serverHandler.getLocalMessagesBetweenUsers(selectedFriend)!= null) { //if even on server 0 messages between, do nothing
-            serverHandler.getFriendList().put(selectedFriend,0);
-            for (Message msg : serverHandler.getLocalMessagesBetweenUsers(selectedFriend)) {
-                if (msg.getFromUser().equals(this.username)) {
-                    showSendMessage(msg.getMessage(),msg.getCreatedTime());
-                } else {
-                    showReceivedMessage(msg.getMessage(),msg.getCreatedTime());
-                }
-            }
         }
     }
 

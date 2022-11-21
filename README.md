@@ -6,7 +6,7 @@ Simple multi client - server chat application build with JavaFX and using SQL da
 
 ![image](https://user-images.githubusercontent.com/57802714/202924901-37bc4314-5806-4a0b-b8dc-35468073bff6.png)  ![image](https://user-images.githubusercontent.com/57802714/202924649-96419238-e972-4843-8a6e-5a30d90c6c68.png)
 
-![image](https://user-images.githubusercontent.com/57802714/202924677-4c0ad309-52a7-4060-b23c-64af64fe1a44.png)  ![image](https://user-images.githubusercontent.com/57802714/202924684-ffb2fd8f-656d-47e7-8cf3-72301fdee138.png)
+![image](https://user-images.githubusercontent.com/57802714/203175934-0be087e0-9f16-4bfa-bc40-54911df3fcf4.png)
 
 
 Prerequisites:
@@ -57,12 +57,20 @@ User which will be added to your friendlist has to be stored in database (create
 AddFriend window, you can chat to user by selecting him in menu on right side of main window. You can write and send message 
 by clicking on button "Send" or clicking on Enter on your keyboard.
 
+Database:
+- Database is called simchatx_database.
+- Users and their passwords are stored in "user" table
+- Users friendlist and messages is stored in table "nameofuser_friendlist" and "nameofuser_messages" (so for every user there is row in "users" table and 2 additional
+tables
+
 Some more info and known bugs which needs to be fixed:
+- There is no option to delete messages, users, or friend from friendlist etc.
 - Password are hashed in database (SHA-512 with salt)
 - Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed)
 - You can´t add yourself to your friendlist.
 
 - //TODO:
+  - Make robustnes user input, e.g. depending on the database parameters (e.g. condition on length of username and password)
   - Sorting of friends in GUI
   - Encrypt server-client communication and content of messages
   - Replace hotfix for regex for user inputs when logging/signup

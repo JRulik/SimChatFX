@@ -66,7 +66,7 @@ tables).
 Some more info and known bugs which needs to be fixed:
 - There is no option to delete messages, users, or friend from friendlist etc.
 - Password are hashed in database (SHA-512 with salt).
-- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (should be stored in database and then retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed).
+- Info about pending messages from other users is stored locally. So when login again/new run of application, this information is lost (only information about unread messages. Messages are securely saved in database and can be retrieved). Info about pending messages is also lost when new friend is added (GUI is refreshed).
 - You can´t add yourself to your friendlist.
 
 - //TODO:
